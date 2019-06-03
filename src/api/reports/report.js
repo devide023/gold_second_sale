@@ -29,4 +29,15 @@ function cruises_rc(ksrq, jsrq,cruisesno) {
     }
   })
 }
-export default { rep_rcno,rep_cruises,cruises_rc}
+function cruises_class_rank(ksrq,jsrq)
+{
+  return request({
+    url:'/report/cruises_class_rank',
+    method:'get',
+    params:{
+      ksrq:ksrq,
+      jsrq:jsrq
+    }
+  })
+}
+export default { rep_rcno,rep_cruises,cruises_rc,cruises_class_rank}

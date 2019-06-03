@@ -31,27 +31,29 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [{
-  path: '/login',
-  component: () => import('@/views/login/index'),
-  hidden: true
-},
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
 
-{
-  path: '/404',
-  component: () => import('@/views/404'),
-  hidden: true
-},
-{
-  path:'/',
-  redirect: '/echarts/index',
-  hidden:true
-},
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
+  {
+    path: '/',
+    redirect: '/echarts/index',
+    hidden: true
+  },
   {
     path: '/echarts',
     component: Layout,
-    redirect: '/echarts/index',
-    name:'echarts',
-    meta:{title:'图表',icon:'chart'},
+    name: 'echarts',
+    meta: {
+      title: '图表',
+      icon: 'chart'
+    },
     children: [{
         path: 'index',
         name: 'cruises_rc',
@@ -71,42 +73,59 @@ export const constantRoutes = [{
         }
       },
       {
-        path:'cruisesclass',
-        name:'cruisesclass',
-        component:()=>import('@/views/chart/cruisesclass'),
-        meta:{
-          title:'邮轮分类销售统计',
-          icon:'chart'
+        path: 'cruisesclass',
+        name: 'cruisesclass',
+        component: () => import('@/views/chart/cruisesclass'),
+        meta: {
+          title: '邮轮分类销售统计',
+          icon: 'chart'
         }
       }
     ]
   },
-
   {
-    path: '/example',
+    path: '/reports',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
+    redirect: '/reports/index',
+    name: 'reports',
     meta: {
-      title: 'Example',
+      title: '报表',
       icon: 'example'
     },
     children: [{
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
+        path: 'index',
+        name: 'rep_index',
+        component: () => import('@/views/reports/cruises_class_stat'),
         meta: {
-          title: 'Table',
+          title: '邮轮分类统计报表',
           icon: 'table'
         }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
+        path: 'rcstat',
+        name: 'rcstat',
+        component: () => import('@/views/reports/cruises_rc_stat'),
         meta: {
-          title: 'Tree',
-          icon: 'tree'
+          title: '邮轮航次分析报表',
+          icon: 'table'
+        }
+      },
+      {
+        path: 'classrank',
+        name: 'classrank',
+        component: () => import('@/views/reports/cruises_class_rank'),
+        meta: {
+          title: '邮轮分类销售排行榜',
+          icon: 'table'
+        }
+      },
+      {
+        path: 'placerank',
+        name: 'placerank',
+        component: () => import('@/views/reports/cruises_place_rank'),
+        meta: {
+          title: '邮轮站点销售排行榜',
+          icon: 'table'
         }
       }
     ]

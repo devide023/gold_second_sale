@@ -1,9 +1,10 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import { Message,Loading  } from 'element-ui'
 //import store from '@/store'
 //import { getToken } from '@/utils/auth'
 import querystring from 'querystring'
 // create an axios instance
+let loadingInstance
 const service = axios.create({
   baseURL: process.env.VUE_APP_SERVER_API, // url = base url + request url
   withCredentials: false, // send cookies when cross-domain requests
@@ -33,6 +34,12 @@ service.interceptors.request.use(
     //   // please modify it according to the actual situation
     //   config.headers['X-Token'] = getToken()
     // }
+    loadingInstance = Loading.service({
+      lock: true,
+      text: 'Loading',
+      spinner: 'el-icon-loading',
+      background: 'rgba(0, 0, 0, 0.7)'
+    });
     return config
   },
   error => {
@@ -55,6 +62,7 @@ service.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   response => {
+    loadingInstance.close();
     const res = JSON.parse(response.data)
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 1) {
