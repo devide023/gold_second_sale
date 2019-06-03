@@ -41,7 +41,11 @@ export const constantRoutes = [{
   component: () => import('@/views/404'),
   hidden: true
 },
-
+{
+  path:'/',
+  redirect: '/echarts/index',
+  hidden:true
+},
   {
     path: '/echarts',
     component: Layout,
@@ -64,6 +68,15 @@ export const constantRoutes = [{
         meta: {
           title: '邮轮销售统计',
           icon: 'chart'
+        }
+      },
+      {
+        path:'cruisesclass',
+        name:'cruisesclass',
+        component:()=>import('@/views/chart/cruisesclass'),
+        meta:{
+          title:'邮轮分类销售统计',
+          icon:'chart'
         }
       }
     ]

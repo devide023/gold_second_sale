@@ -21,7 +21,20 @@ function echart_cruises_income(ksrq, jsrq) {
     }
   })
 }
+
+function echart_cruises_class(ksrq,jsrq)
+{
+  return request({
+    url: '/echarts/cruisesdic',
+    method: 'get',
+    params: {
+      ksrq: ksrq,
+      jsrq: jsrq
+    }
+  })
+}
 export default {
   echart_cruises,
-  echart_cruises_income
+  echart_cruises_income,
+  echart_cruises_class
 }
