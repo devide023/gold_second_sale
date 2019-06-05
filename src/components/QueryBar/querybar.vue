@@ -19,56 +19,38 @@
     <el-select v-model="cruisesno" placeholder="请选择邮轮" size="small">
       <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
     </el-select>
-    <el-button type="primary" @click="querydata" size="small" icon="el-icon-search">查询</el-button>
+    <el-button type="primary" size="small" icon="el-icon-search" @click="querydata">查询</el-button>
   </div>
 </template>
 
 <script>
+import {get_cruisesinfo} from "@/api/base/baseinfo";
+import {currentdate,currentmonthfirst} from '@/utils/datetool';
 export default {
   data() {
     return {
       ksrq: "",
       jsrq: "",
-      cruisesno:'',
-      options: [
-          {
-          value: "",
-          label: "--全部--"
-        },
-        {
-          value: "001",
-          label: "黄金1号"
-        },
-        {
-          value: "002",
-          label: "黄金2号"
-        },
-        {
-          value: "003",
-          label: "黄金3号"
-        },
-        {
-          value: "005",
-          label: "黄金5号"
-        },
-        {
-          value: "006",
-          label: "黄金6号"
-        },
-        {
-          value: "007",
-          label: "黄金7号"
-        },
-        {
-          value: "008",
-          label: "黄金8号"
-        }
-      ]
+      cruisesno: "",
+      options: []
     };
+  },
+  mounted() {
+    this.ksrq = currentmonthfirst();
+    this.jsrq = currentdate();
+    this.cruisesinfo();
   },
   methods: {
     querydata() {
-      this.$emit("query_bar_click", { ksrq: this.ksrq, jsrq: this.jsrq });
+      this.$emit("query_bar_click", { ksrq: this.ksrq, jsrq: this.jsrq,cruisesno:this.cruisesno });
+    },
+    cruisesinfo() {
+      get_cruisesinfo().then(res => {
+        res.list.splice(0,0,{code:'',name:'-请选择邮轮-'});
+        this.options = res.list.map(item => {
+          return { value: item.code, label: item.name };
+        });
+      });
     }
   }
 };

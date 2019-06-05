@@ -60,7 +60,7 @@ export const constantRoutes = [{
         component: () => import('@/views/chart/index'),
         meta: {
           title: '邮轮各航次销售统计',
-          icon: 'chart-line'
+          icon: 'chart-scatter-plot'
         }
       },
       {
@@ -69,7 +69,7 @@ export const constantRoutes = [{
         component: () => import('@/views/chart/cruisesdate'),
         meta: {
           title: '邮轮销售统计',
-          icon: 'chart'
+          icon: 'chart-pie-alt'
         }
       },
       {
@@ -78,7 +78,7 @@ export const constantRoutes = [{
         component: () => import('@/views/chart/cruisesclass'),
         meta: {
           title: '邮轮分类销售统计',
-          icon: 'chart'
+          icon: 'chart-bar'
         }
       }
     ]
@@ -90,24 +90,24 @@ export const constantRoutes = [{
     name: 'reports',
     meta: {
       title: '报表',
-      icon: 'example'
+      icon: 'table'
     },
     children: [{
         path: 'index',
         name: 'rep_index',
         component: () => import('@/views/reports/cruises_class_stat'),
         meta: {
-          title: '邮轮分类统计报表',
-          icon: 'table'
+          title: '航次分类统计报表',
+          icon: 'flag-fill'
         }
       },
       {
         path: 'rcstat',
         name: 'rcstat',
-        component: () => import('@/views/reports/cruises_rc_stat'),
+        component: () => import('@/views/reports/cruises_rc_saletop'),
         meta: {
-          title: '邮轮航次分析报表',
-          icon: 'table'
+          title: '邮轮航次销售排行',
+          icon: 'rank'
         }
       },
       {
@@ -116,16 +116,25 @@ export const constantRoutes = [{
         component: () => import('@/views/reports/cruises_class_rank'),
         meta: {
           title: '邮轮分类销售排行榜',
-          icon: 'table'
+          icon: 'tag'
         }
       },
       {
         path: 'placerank',
         name: 'placerank',
-        component: () => import('@/views/reports/cruises_place_rank'),
+        component: () => import('@/views/reports/cruises_place_saletop'),
         meta: {
           title: '邮轮站点销售排行榜',
-          icon: 'table'
+          icon: 'chart-relation'
+        }
+      },
+      {
+        path:'menucodetop',
+        name:'menucodetop',
+        component:()=>import('@/views/reports/menucode_rank'),
+        meta: {
+          title: '消费项目排行榜',
+          icon: 'chart-area'
         }
       }
     ]

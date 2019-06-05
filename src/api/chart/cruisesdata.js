@@ -22,14 +22,15 @@ function echart_cruises_income(ksrq, jsrq) {
   })
 }
 
-function echart_cruises_class(ksrq,jsrq)
+function echart_cruises_class(ksrq,jsrq,cruisesno)
 {
   return request({
     url: '/echarts/cruisesdic',
     method: 'get',
     params: {
       ksrq: ksrq,
-      jsrq: jsrq
+      jsrq: jsrq,
+      cruisesno:cruisesno
     }
   })
 }

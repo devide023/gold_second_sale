@@ -29,14 +29,15 @@ function cruises_rc(ksrq, jsrq,cruisesno) {
     }
   })
 }
-function cruises_class_rank(ksrq,jsrq)
+function cruises_class_rank(ksrq,jsrq,cruisesno)
 {
   return request({
     url:'/report/cruises_class_rank',
     method:'get',
     params:{
       ksrq:ksrq,
-      jsrq:jsrq
+      jsrq:jsrq,
+      cruisesno:cruisesno
     }
   })
 }

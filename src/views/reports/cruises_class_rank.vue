@@ -11,29 +11,34 @@
 <script>
 import rep from "@/api/reports/report";
 import QueryBar from '@/components/QueryBar/querybar';
+import {currentdate,currentmonthfirst} from '@/utils/datetool';
 export default {
   components: {
     'query-bar':QueryBar
   },
   data() {
     return {
-      ksrq: "2019-01-01",
-      jsrq: "2019-12-31",
+      ksrq: "",
+      jsrq: "",
+      cruisesno:'',
       tabledata: []
     };
   },
   created() {
+    this.ksrq = currentmonthfirst();
+    this.jsrq = currentdate();
     this.getdata();
   },
   methods: {
     getdata() {
-      rep.cruises_class_rank(this.ksrq, this.jsrq).then(res => {
+      rep.cruises_class_rank(this.ksrq, this.jsrq,this.cruisesno).then(res => {
         this.tabledata = res.list;
       });
     },
     querydata(data){
       this.ksrq = data.ksrq;
       this.jsrq = data.jsrq;
+      this.cruisesno = data.cruisesno;
       this.getdata();
     }
   }
