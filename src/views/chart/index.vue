@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div class="querybar">
+      <el-date-picker v-model="ksrq" type="date" value-format="yyyy-MM-dd" size="small" placeholder="开始日期"></el-date-picker>
+      <el-date-picker v-model="jsrq" type="date" value-format="yyyy-MM-dd" size="small" placeholder="结束日期"></el-date-picker>
+      <el-button type="primary" icon="el-icon-search" size="small" @click="echart_data">查询</el-button>
+    </div>
     <div id="gold1" style="width:100%;height:300px"></div>
     <div id="gold2" style="width:100%;height:300px"></div>
     <div id="gold3" style="width:100%;height:300px"></div>
@@ -12,12 +17,16 @@
 
 <script>
 import report from "@/api/chart/cruisesdata";
+import {
+  currentdate,
+  currentyearfirst
+} from "@/utils/datetool";
 import echart from "echarts";
 export default {
   data() {
     return {
-      ksrq: "2019-01-01",
-      jsrq: "2019-12-31",
+      ksrq: "",
+      jsrq: "",
       list: null,
       gold1: null,
       gold2: null,
@@ -28,7 +37,9 @@ export default {
       gold8: null,
       option1: {
         title: {
-          text: ""
+          text: "",
+          textAlign: "center",
+          left:'10%'
         },
         tooltip: {},
         legend: {
@@ -48,7 +59,9 @@ export default {
       },
       option2: {
         title: {
-          text: ""
+          text: "",
+          textAlign: "center",
+          left:'10%'
         },
         tooltip: {},
         legend: {
@@ -68,7 +81,9 @@ export default {
       },
       option3: {
         title: {
-          text: ""
+          text: "",
+          textAlign: "center",
+          left:'10%'
         },
         tooltip: {},
         legend: {
@@ -88,7 +103,9 @@ export default {
       },
       option5: {
         title: {
-          text: ""
+          text: "",
+          textAlign: "center",
+          left:'10%'
         },
         tooltip: {},
         legend: {
@@ -108,7 +125,9 @@ export default {
       },
       option6: {
         title: {
-          text: ""
+          text: "",
+          textAlign: "center",
+          left:'10%'
         },
         tooltip: {},
         legend: {
@@ -128,7 +147,9 @@ export default {
       },
       option7: {
         title: {
-          text: ""
+          text: "",
+          textAlign: "center",
+          left:'10%'
         },
         tooltip: {},
         legend: {
@@ -148,7 +169,9 @@ export default {
       },
       option8: {
         title: {
-          text: ""
+          text: "",
+          textAlign: "center",
+          left:'10%'
         },
         tooltip: {},
         legend: {
@@ -176,17 +199,19 @@ export default {
     this.gold6 = echart.init(document.getElementById("gold6"));
     this.gold7 = echart.init(document.getElementById("gold7"));
     this.gold8 = echart.init(document.getElementById("gold8"));
+    this.ksrq = currentyearfirst();
+    this.jsrq = currentdate();
     this.echart_data();
   },
   methods: {
     echart_data() {
       this.gold1.showLoading();
-        this.gold2.showLoading();
-        this.gold3.showLoading();
-        this.gold5.showLoading();
-        this.gold6.showLoading();
-        this.gold7.showLoading();
-        this.gold8.showLoading();
+      this.gold2.showLoading();
+      this.gold3.showLoading();
+      this.gold5.showLoading();
+      this.gold6.showLoading();
+      this.gold7.showLoading();
+      this.gold8.showLoading();
       report.echart_cruises(this.ksrq, this.jsrq).then(res => {
         this.list = res.list;
         this.gold1.hideLoading();
@@ -317,4 +342,7 @@ export default {
 </script>
 
 <style scoped>
+.querybar {
+  padding: 5px;
+}
 </style>

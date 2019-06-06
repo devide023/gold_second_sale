@@ -129,9 +129,9 @@ export const constantRoutes = [{
         }
       },
       {
-        path:'menucodetop',
-        name:'menucodetop',
-        component:()=>import('@/views/reports/menucode_rank'),
+        path: 'menucodetop',
+        name: 'menucodetop',
+        component: () => import('@/views/reports/menucode_rank'),
         meta: {
           title: '消费项目排行榜',
           icon: 'chart-area'
@@ -139,7 +139,26 @@ export const constantRoutes = [{
       }
     ]
   },
-
+  {
+    path: '/cruisesmgr',
+    component: Layout,
+    redirect: '/cruisesmgr/rcdetail',
+    name: 'cruisesmgr',
+    meta: {
+      title: '邮轮管理',
+      icon: 'form'
+    },
+    children: [{
+        path: 'rcdetail',
+        name: 'rcdetail',
+        component: () => import('@/views/cruisesmgr/rcsaledetail'),
+        meta: {
+          title: '航次明细查询',
+          icon: 'database-set-fill'
+        }
+      }
+    ]
+  },
   {
     path: '/form',
     component: Layout,

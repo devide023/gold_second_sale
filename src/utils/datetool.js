@@ -18,3 +18,9 @@ export function formatdate(date) {
   const dd = d.getDate();
   return yy + "-" + mm + "-" + dd;
 }
+export function currentyearfirst()
+{
+  const d = new Date();
+  const yy = d.getFullYear();
+  return yy + "-01-01";
+}
