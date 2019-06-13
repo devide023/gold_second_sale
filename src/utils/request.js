@@ -20,7 +20,7 @@ const service = axios.create({
 
     return data;
   }],
-  timeout: 5000 // request timeout
+  timeout: 50000 // request timeout
 })
 
 // request interceptor

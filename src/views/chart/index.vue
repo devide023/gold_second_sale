@@ -1,8 +1,20 @@
 <template>
   <div>
     <div class="querybar">
-      <el-date-picker v-model="ksrq" type="date" value-format="yyyy-MM-dd" size="small" placeholder="开始日期"></el-date-picker>
-      <el-date-picker v-model="jsrq" type="date" value-format="yyyy-MM-dd" size="small" placeholder="结束日期"></el-date-picker>
+      <el-date-picker
+        v-model="ksrq"
+        type="date"
+        value-format="yyyy-MM-dd"
+        size="small"
+        placeholder="开始日期"
+      ></el-date-picker>
+      <el-date-picker
+        v-model="jsrq"
+        type="date"
+        value-format="yyyy-MM-dd"
+        size="small"
+        placeholder="结束日期"
+      ></el-date-picker>
       <el-button type="primary" icon="el-icon-search" size="small" @click="echart_data">查询</el-button>
     </div>
     <div id="gold1" style="width:100%;height:300px"></div>
@@ -17,10 +29,7 @@
 
 <script>
 import report from "@/api/chart/cruisesdata";
-import {
-  currentdate,
-  currentyearfirst
-} from "@/utils/datetool";
+import { currentdate, currentyearfirst } from "@/utils/datetool";
 import echart from "echarts";
 export default {
   data() {
@@ -39,7 +48,7 @@ export default {
         title: {
           text: "",
           textAlign: "center",
-          left:'10%'
+          left: "10%"
         },
         tooltip: {},
         legend: {
@@ -61,7 +70,7 @@ export default {
         title: {
           text: "",
           textAlign: "center",
-          left:'10%'
+          left: "10%"
         },
         tooltip: {},
         legend: {
@@ -83,7 +92,7 @@ export default {
         title: {
           text: "",
           textAlign: "center",
-          left:'10%'
+          left: "10%"
         },
         tooltip: {},
         legend: {
@@ -105,7 +114,7 @@ export default {
         title: {
           text: "",
           textAlign: "center",
-          left:'10%'
+          left: "10%"
         },
         tooltip: {},
         legend: {
@@ -127,7 +136,7 @@ export default {
         title: {
           text: "",
           textAlign: "center",
-          left:'10%'
+          left: "10%"
         },
         tooltip: {},
         legend: {
@@ -149,7 +158,7 @@ export default {
         title: {
           text: "",
           textAlign: "center",
-          left:'10%'
+          left: "10%"
         },
         tooltip: {},
         legend: {
@@ -171,7 +180,7 @@ export default {
         title: {
           text: "",
           textAlign: "center",
-          left:'10%'
+          left: "10%"
         },
         tooltip: {},
         legend: {
@@ -202,6 +211,13 @@ export default {
     this.ksrq = currentyearfirst();
     this.jsrq = currentdate();
     this.echart_data();
+    this.gold1.on('click','series',this.gold1click);
+    this.gold2.on('click','series',this.gold1click);
+    this.gold3.on('click','series',this.gold1click);
+    this.gold5.on('click','series',this.gold1click);
+    this.gold6.on('click','series',this.gold1click);
+    this.gold7.on('click','series',this.gold1click);
+    this.gold8.on('click','series',this.gold1click);
   },
   methods: {
     echart_data() {
@@ -336,6 +352,10 @@ export default {
           this.gold8.setOption(this.option8);
         }
       });
+    },
+    gold1click(param){
+      const rcno = param.name;
+      window.location.href='/cruisesmgr/rcdetail?rcno='+rcno;
     }
   }
 };

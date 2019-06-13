@@ -1,9 +1,9 @@
 <template>
   <div class="result">
-      <div class="querybar">
-          <el-input v-model="rcno" readonly size="small" placeholder="航次编号" style="width:180px"></el-input>
-          <el-button type="primary" icon="el-icon-search" size="small" @click="getdata">查询</el-button>
-      </div>
+    <div class="querybar">
+      <el-input v-model="rcno" readonly size="small" placeholder="航次编号" style="width:180px"></el-input>
+      <el-button type="primary" icon="el-icon-search" size="small" @click="getdata">查询</el-button>
+    </div>
     <el-table :data="list" :border="true" :stripe="true">
       <el-table-column property="placename" label="销售点" width="150"></el-table-column>
       <el-table-column property="typename" label="分类" width="200"></el-table-column>
@@ -11,10 +11,18 @@
       <el-table-column property="amount" sortable label="数量"></el-table-column>
       <el-table-column property="curr" sortable label="金额"></el-table-column>
       <el-table-column property="name" label="消费者"></el-table-column>
-      <el-table-column property="sex" label="性别"></el-table-column>
       <el-table-column property="birthdate" label="生日"></el-table-column>
-      <el-table-column property="address" label="地址"></el-table-column>
     </el-table>
+    <el-pagination
+      background
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
+      layout="total, sizes, prev, pager, next"
+      :current-page.sync="pageindex"
+      :page-size="pagesize"
+      :total="result_count"
+      :page-sizes="[20, 50, 100, 200]"
+    ></el-pagination>
   </div>
 </template>
 
@@ -25,7 +33,10 @@ export default {
   data() {
     return {
       list: [],
-      rcno: ""
+      rcno: "",
+      pageindex: 1,
+      pagesize: 50,
+      result_count: 0
     };
   },
   mounted() {
@@ -37,9 +48,19 @@ export default {
   },
   methods: {
     getdata() {
-      rcsaledetail(this.rcno).then(res => {
+      rcsaledetail(this.rcno, this.pageindex, this.pagesize).then(res => {
         this.list = res.list;
+        this.result_count = res.resultcount;
       });
+    },
+    handleCurrentChange(val){
+      this.pageindex = val;
+      this.getdata();
+    },
+    handleSizeChange(val){
+      this.pagesize=val;
+      this.pageindex=1;
+      this.getdata();
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       console.log(row);
@@ -50,8 +71,8 @@ export default {
 </script>
 
 <style scoped>
-.querybar{
-    padding: 5px;
+.querybar {
+  padding: 5px;
 }
 .result {
   padding: 5px;

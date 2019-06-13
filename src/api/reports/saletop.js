@@ -33,12 +33,14 @@ export function placesaletop(ksrq, jsrq, cruisesno) {
   });
 }
 
-export function rcsaledetail(rcno) {
+export function rcsaledetail(rcno,pageindex,pagesize) {
   return request({
     url: '/report/rcdetail',
     method: 'get',
     params: {
-      rcno: rcno
+      rcno: rcno,
+      pageindex:pageindex,
+      pagesize:pagesize
     }
   });
 }
