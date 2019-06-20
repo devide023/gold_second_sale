@@ -47,6 +47,26 @@ export const constantRoutes = [{
     hidden: true
   },
   {
+    path:'/usermgr',
+    component:Layout,
+    name:'usermgr',
+    meta:{
+      title:'用户管理',
+      icon:'user'
+    },
+    children:[
+      {
+        path:'index',
+        name:'user_index',
+        component:()=>import('@/views/usermgr/index'),
+        meta: {
+          title: '用户列表',
+          icon: 'chart-scatter-plot'
+        }
+      }
+    ]
+  },
+  {
     path: '/echarts',
     component: Layout,
     name: 'echarts',

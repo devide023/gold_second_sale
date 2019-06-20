@@ -8,9 +8,6 @@ let loadingInstance
 const service = axios.create({
   baseURL: process.env.VUE_APP_SERVER_API, // url = base url + request url
   withCredentials: false, // send cookies when cross-domain requests
-  headers: {
-    'content-type':'application/x-www-form-urlencoded'
-  },
   transformRequest: [function (data) {
     // 对 data 进行任意转换处理
     return querystring.stringify(data);
