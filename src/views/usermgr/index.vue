@@ -7,7 +7,7 @@
       <el-button type="primary" icon="el-icon-plus" size="small" @click="adduser">添加用户</el-button>
     </div>
     <el-table :data="list">
-      <el-table-column label="编号" prop="code"></el-table-column>
+      <el-table-column label="编号" prop="usercode"></el-table-column>
       <el-table-column label="姓名" prop="username"></el-table-column>
       <el-table-column label="性别" prop="sex"></el-table-column>
       <el-table-column label="出生日期" prop="birthday"></el-table-column>
@@ -34,7 +34,7 @@
     <el-dialog title="新增用户" top="20px" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="用户代号" label-width="80px">
-          <el-input v-model="form.code"></el-input>
+          <el-input v-model="form.usercode"></el-input>
         </el-form-item>
         <el-form-item label="密码" label-width="80px">
           <el-input type="password" v-model="form.userpwd"></el-input>
@@ -84,7 +84,7 @@ export default {
       recordcount: 0,
       dialogFormVisible: false,
       form: {
-        code: "",
+        usercode: "",
         username: "",
         userpwd: "",
         status: 1,
