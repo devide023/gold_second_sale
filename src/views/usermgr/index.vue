@@ -1,3 +1,4 @@
+import { formatDate } from '../../utils/datetool';
 <template>
   <div>
     <div class="querybar">
@@ -5,15 +6,30 @@
       <el-input v-model="code" placeholder="请输入用户代号" size="small" style="width:150px;"></el-input>
       <el-button type="primary" icon="el-icon-search" size="small" @click="query">查询</el-button>
       <el-button type="primary" icon="el-icon-plus" size="small" @click="adduser">添加用户</el-button>
+      <el-button type="warning" icon="el-icon-close" size="small" @click="disdel">禁用</el-button>
+      <el-button type="success" icon="el-icon-check" size="small" @click="enabel">启用</el-button>
+      <el-button type="danger" icon="el-icon-delete" size="small" @click="remove">删除</el-button>
     </div>
-    <el-table :data="list">
-      <el-table-column label="编号" prop="usercode"></el-table-column>
-      <el-table-column label="姓名" prop="username"></el-table-column>
-      <el-table-column label="性别" prop="sex"></el-table-column>
-      <el-table-column label="出生日期" prop="birthday"></el-table-column>
-      <el-table-column label="电话" prop="tel"></el-table-column>
+    <el-table :data="list" @selection-change="handleSelectionChange">
+      >
+      <el-table-column type="selection" width="55" show-overflow-tooltip></el-table-column>
+      <el-table-column label="状态" width="70">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status===1">{{scope.row.status|statusName}}</el-tag>
+          <el-tag type="danger" v-if="scope.row.status===0">{{scope.row.status|statusName}}</el-tag>
+          </template>
+      </el-table-column>
+      <el-table-column label="代号" prop="usercode" width="80"></el-table-column>
+      <el-table-column label="姓名" prop="username" width="150"></el-table-column>
+      <el-table-column label="性别" width="80">
+        <template slot-scope="scope">{{scope.row.sex===1?"男":"女"}}</template>
+      </el-table-column>
+      <el-table-column label="出生日期" width="150">
+        <template slot-scope="scope">{{scope.row.birthday|formatDate}}</template>
+      </el-table-column>
+      <el-table-column label="电话" prop="tel" width="150"></el-table-column>
       <el-table-column label="地址" prop="address"></el-table-column>
-      <el-table-column label="操作" width="100">
+      <el-table-column label="操作" width="100" fixed="right">
         <template slot-scope="scope">
           <div>
             <el-button type="text" size="small" @click="useredit(scope.row)">编辑</el-button>
@@ -72,7 +88,9 @@
 </template>
 
 <script>
-import { userlist, adduser } from "@/api/usermgr/user";
+import { userlist, adduser, deluser, disabeluser } from "@/api/usermgr/user";
+import { formatDate } from "@/utils/datetool";
+import {StatusList} from '@/utils/status'
 export default {
   data() {
     return {
@@ -92,7 +110,8 @@ export default {
         birthday: "",
         sex: "1",
         address: ""
-      }
+      },
+      multipleSelection: []
     };
   },
   mounted() {
@@ -100,13 +119,68 @@ export default {
   },
   methods: {
     getadata() {
-      userlist(this.pageindex, this.pagesize).then(res => {
+      userlist(this.key, this.code, this.pageindex, this.pagesize).then(res => {
         this.list = res.list;
         this.recordcount = res.recordcount;
       });
     },
     adduser() {
       this.dialogFormVisible = true;
+    },
+    disdel() {
+      if (this.multipleSelection.length > 0) {
+        const ids = [];
+        this.multipleSelection.forEach(item => {
+          ids.push(item.id);
+        });
+        disabeluser(ids, 0).then(res => {
+          this.getadata();
+        });
+      }
+      else{
+        this.$notify.info({
+          title: '操作提示',
+          message: '请选择要操作的项！'
+        });
+      }
+    },
+    enabel(){
+      if (this.multipleSelection.length > 0){
+        const ids = [];
+        this.multipleSelection.forEach(item => {
+          ids.push(item.id);
+        });
+        disabeluser(ids, 1).then(res => {
+          this.getadata();
+        });
+      }
+      else{
+        this.$notify.info({
+          title: '操作提示',
+          message: '请选择要操作的项！'
+        });
+      }
+    },
+    remove() {
+      if (this.multipleSelection.length > 0) {
+        const ids = [];
+        this.multipleSelection.forEach(item => {
+          ids.push(item.id);
+        });
+        deluser(ids).then(res => {
+          console.log(res);
+          this.getadata();
+        });
+      } 
+      else{
+        this.$notify.info({
+          title: '操作提示',
+          message: '请选择要操作的项！'
+        });
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     },
     submit_userdata() {
       adduser(this.form).then(res => {
@@ -127,14 +201,31 @@ export default {
       this.pageindex = val;
       this.getadata();
     },
-    show_menu(){
-        this.show_dropdown_menu=true;
+    show_menu() {
+      this.show_dropdown_menu = true;
     },
     useredit(row) {
       console.log(row);
     },
     userrole(row) {
       console.log(row);
+    }
+  },
+  filters: {
+    formatDate: function(value) {
+      if (String(value) !== "null") {
+        return formatDate(new Date(value), "yyyy-MM-dd");
+      } else {
+        return "";
+      }
+    },
+    statusName:function(value){
+      const list = StatusList().filter(item=>{return item.status===value});
+      if (list.length>0) {
+        return list[0].title;
+      }else{
+        return value;
+      }
     }
   }
 };

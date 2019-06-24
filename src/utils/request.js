@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Message,Loading  } from 'element-ui'
 //import store from '@/store'
 //import { getToken } from '@/utils/auth'
-import querystring from 'querystring'
+//import querystring from 'querystring'
 // create an axios instance
 let loadingInstance
 const service = axios.create({
@@ -10,7 +10,9 @@ const service = axios.create({
   withCredentials: false, // send cookies when cross-domain requests
   transformRequest: [function (data) {
     // 对 data 进行任意转换处理
-    return querystring.stringify(data);
+    //const vdata = querystring.stringify(data);
+    //console.log(vdata);
+    return data;
   }],
   transformResponse: [function (data) {
     // 对 data 进行任意转换处理
