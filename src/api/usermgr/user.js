@@ -44,3 +44,26 @@ export function disabeluser(ids, status) {
     })
   });
 }
+
+export function login(data) {
+  return request({
+    url: '/usermgr/check',
+    method: 'get',
+    params:{usercode:data.username,userpwd:data.userpwd}
+  })
+}
+
+export function getInfo(token) {
+  return request({
+    url: '/usermgr/info',
+    method: 'get',
+    params: { token }
+  })
+}
+
+export function logout() {
+  return request({
+    url: '/usermgr/logout',
+    method: 'post'
+  })
+}

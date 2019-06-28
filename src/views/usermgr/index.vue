@@ -25,7 +25,7 @@ import { formatDate } from '../../utils/datetool';
         <template slot-scope="scope">{{scope.row.sex===1?"男":"女"}}</template>
       </el-table-column>
       <el-table-column label="出生日期" width="150">
-        <template slot-scope="scope">{{scope.row.birthday|formatDate}}</template>
+        <template slot-scope="scope">{{scope.row.birthday|formatedate}}</template>
       </el-table-column>
       <el-table-column label="电话" prop="tel" width="150"></el-table-column>
       <el-table-column label="地址" prop="address"></el-table-column>
@@ -89,8 +89,6 @@ import { formatDate } from '../../utils/datetool';
 
 <script>
 import { userlist, adduser, deluser, disabeluser } from "@/api/usermgr/user";
-import { formatDate } from "@/utils/datetool";
-import {StatusList} from '@/utils/status'
 export default {
   data() {
     return {
@@ -171,8 +169,7 @@ export default {
           console.log(res);
           this.getadata();
         });
-      } 
-      else{
+      }else{
         this.$notify.info({
           title: '操作提示',
           message: '请选择要操作的项！'
@@ -209,23 +206,6 @@ export default {
     },
     userrole(row) {
       console.log(row);
-    }
-  },
-  filters: {
-    formatDate: function(value) {
-      if (String(value) !== "null") {
-        return formatDate(new Date(value), "yyyy-MM-dd");
-      } else {
-        return "";
-      }
-    },
-    statusName:function(value){
-      const list = StatusList().filter(item=>{return item.status===value});
-      if (list.length>0) {
-        return list[0].title;
-      }else{
-        return value;
-      }
     }
   }
 };

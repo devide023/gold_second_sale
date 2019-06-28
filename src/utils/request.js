@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message,Loading  } from 'element-ui'
-//import store from '@/store'
-//import { getToken } from '@/utils/auth'
+import store from '@/store'
+import { getToken } from '@/utils/auth'
 //import querystring from 'querystring'
 // create an axios instance
 let loadingInstance
@@ -27,12 +27,12 @@ service.interceptors.request.use(
   config => {
     // do something before request is sent
 
-    // if (store.getters.token) {
-    //   // let each request carry token
-    //   // ['X-Token'] is a custom headers key
-    //   // please modify it according to the actual situation
-    //   config.headers['X-Token'] = getToken()
-    // }
+    if (store.getters.token) {
+      // let each request carry token
+      // ['X-Token'] is a custom headers key
+      // please modify it according to the actual situation
+      config.headers['X-Token'] = getToken()
+    }
     loadingInstance = Loading.service({
       lock: true,
       text: 'Loading',

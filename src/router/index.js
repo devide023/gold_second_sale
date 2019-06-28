@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 Vue.use(Router)
 
 /* Layout */
@@ -35,36 +34,52 @@ export const constantRoutes = [{
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
+  {
+    path:'/',
+    component:Layout,
+    hidden:true,
+    redirect:'/echarts/index'
+  },
   {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
   },
   {
-    path: '/',
-    redirect: '/echarts/index',
-    hidden: true
+    path: '/usermgr',
+    component: Layout,
+    name: 'usermgr',
+    meta: {
+      title: '用户管理',
+      icon: 'user'
+    },
+    children: [{
+      path: 'index',
+      name: 'user_index',
+      component: () => import('@/views/usermgr/index'),
+      meta: {
+        title: '用户列表',
+        icon: 'chart-scatter-plot'
+      }
+    }]
   },
   {
-    path:'/usermgr',
-    component:Layout,
-    name:'usermgr',
-    meta:{
-      title:'用户管理',
-      icon:'user'
+    path: '/menumgr',
+    component: Layout,
+    name: 'menumgr',
+    meta: {
+      title: '功能模块',
+      icon: 'user'
     },
-    children:[
-      {
-        path:'index',
-        name:'user_index',
-        component:()=>import('@/views/usermgr/index'),
-        meta: {
-          title: '用户列表',
-          icon: 'chart-scatter-plot'
-        }
+    children: [{
+      path: 'index',
+      name: 'list',
+      component: () => import('@/views/menumgr/index'),
+      meta: {
+        title: '功能列表',
+        icon: 'list'
       }
-    ]
+    }]
   },
   {
     path: '/echarts',
@@ -169,15 +184,14 @@ export const constantRoutes = [{
       icon: 'form'
     },
     children: [{
-        path: 'rcdetail',
-        name: 'rcdetail',
-        component: () => import('@/views/cruisesmgr/rcsaledetail'),
-        meta: {
-          title: '航次明细查询',
-          icon: 'database-set-fill'
-        }
+      path: 'rcdetail',
+      name: 'rcdetail',
+      component: () => import('@/views/cruisesmgr/rcsaledetail'),
+      meta: {
+        title: '航次明细查询',
+        icon: 'database-set-fill'
       }
-    ]
+    }]
   },
   {
     path: '/form',

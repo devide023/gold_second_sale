@@ -23,16 +23,42 @@ import '@/permission' // permission control
  * Currently MockJs will be used in the production environment,
  * please remove it before going online! ! !
  */
-import { mockXHR } from '../mock'
+import {
+  mockXHR
+} from '../mock'
+import {
+  formatDate
+} from '@/utils/datetool';
+import {
+  StatusList
+} from '@/utils/status';
 if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }
 
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+Vue.use(ElementUI, {
+  locale
+})
 
 Vue.config.productionTip = false
-
+Vue.filter('formatedate', function (value) {
+  if (String(value) !== "null") {
+    return formatDate(new Date(value), "yyyy-MM-dd");
+  } else {
+    return "";
+  }
+});
+Vue.filter('statusName', function (value) {
+  const list = StatusList().filter(item => {
+    return item.status === value;
+  });
+  if (list.length > 0) {
+    return list[0].title;
+  } else {
+    return value;
+  }
+});
 new Vue({
   el: '#app',
   router,
