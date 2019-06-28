@@ -6,7 +6,9 @@ import {
 import {
   getToken,
   setToken,
-  removeToken
+  removeToken,
+  setUserHead,
+  getUserHead
 } from '@/utils/auth'
 import {
   resetRouter
@@ -15,7 +17,7 @@ import {
 const state = {
   token: getToken(),
   name: '',
-  avatar: ''
+  avatar: getUserHead()
 }
 
 const mutations = {
@@ -47,6 +49,7 @@ const actions = {
         commit('SET_NAME', response.user.username)
         commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
         setToken(response.token)
+        setUserHead('https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
       })
   },
 
@@ -84,16 +87,11 @@ const actions = {
     commit,
     state
   }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+    return logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         removeToken()
         resetRouter()
-        resolve()
-      }).catch(error => {
-        reject(error)
       })
-    })
   },
 
   // remove token

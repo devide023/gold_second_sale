@@ -177,7 +177,6 @@ export const constantRoutes = [{
   {
     path: '/cruisesmgr',
     component: Layout,
-    redirect: '/cruisesmgr/rcdetail',
     name: 'cruisesmgr',
     meta: {
       title: '邮轮管理',
