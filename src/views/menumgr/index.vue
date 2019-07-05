@@ -103,7 +103,7 @@ import iconslist from "@/components/choose/chooseicons";
 import { menutypes } from "@/api/base/baseinfo";
 let _this = {};
 let temppath = "";
-let parentpath='';
+let parentpath = "";
 export default {
   data() {
     return {
@@ -162,23 +162,27 @@ export default {
     },
     get_routelist(list) {
       list.forEach(element => {
-        this.route_list.push({ path: element.path });
-        temppath = element.path;
-        if (element.children) {
-          parentpath = element.path;
-          this.get_subroutelist(element.children);
-        }        
+        if (!element.hidden) {
+          this.route_list.push({ path: element.path });
+          temppath = element.path;
+          if (element.children) {
+            parentpath = element.path;
+            this.get_subroutelist(element.children);
+          }
+        }
       });
     },
-    get_subroutelist(list){
-      list.forEach(item=>{
-        temppath = parentpath + "/" + item.path;
-        this.route_list.push({path:temppath});
-        if(item.children){
-          parentpath = temppath;
-          this.get_subroutelist(item.children);
+    get_subroutelist(list) {
+      list.forEach(item => {
+        if (!item.hidden) {
+          temppath = parentpath + "/" + item.path;
+          this.route_list.push({ path: temppath });
+          if (item.children) {
+            parentpath = temppath;
+            this.get_subroutelist(item.children);
+          }
         }
-      })
+      });
     },
     getmenutypes() {
       menutypes().then(res => {
