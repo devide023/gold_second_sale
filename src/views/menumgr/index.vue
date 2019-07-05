@@ -15,20 +15,29 @@
       </el-table-column>
       <el-table-column label="编码">
         <template slot-scope="scope">
-          <a href="#" @click="view_submenu(scope.row)">{{scope.row.code}}</a>
+          <router-link :to="{path:'/menumgr/index?pid='+scope.row.id}">{{scope.row.code}}</router-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="类型">
+        <template slot-scope="scope">
+          {{scope.row.menutype|menutypeName}}
         </template>
       </el-table-column>
       <el-table-column label="名称" prop="title"></el-table-column>
-      <el-table-column label="图标" prop="icon"></el-table-column>
-      <el-table-column label="录入日期">
+      <el-table-column label="图标">
         <template slot-scope="scope">
-          {{scope.row.add_time|formatedate}}
+          <i :class="scope.row.icon" style="font-size:30px;"></i>
         </template>
+      </el-table-column>
+      <el-table-column label="权重" prop="seq"></el-table-column>
+      <el-table-column label="路径" prop="path"></el-table-column>
+      <el-table-column label="录入日期">
+        <template slot-scope="scope">{{scope.row.add_time|formatedate}}</template>
       </el-table-column>
       <el-table-column label="操作" width="100">
         <template slot-scope="scope">
           <div>
-            <el-button type="text" size="small" @click="add_submenu(scope.row)">子菜单</el-button>
+            <el-button type="text" size="small" @click="add_submenu(scope.row)">添加</el-button>
             <el-button type="text" size="small" @click="edit_menu(scope.row)">编辑</el-button>
           </div>
         </template>
@@ -43,11 +52,29 @@
         <el-form-item label="名称" label-width="80px">
           <el-input v-model="form.title" placeholder="菜单名称"></el-input>
         </el-form-item>
+        <el-form-item label="状态" label-width="80px">
+          <el-select v-model="form.status" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="菜单类型" label-width="80px">
+          <el-select v-model="form.menutype" placeholder="">
+            <el-option v-for="item in menutype_list" :key="item.id" :label="item.title" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="图标" label-width="80px">
-          <el-input v-model="form.icon" placeholder></el-input>
+          <el-input v-model="form.icon" placeholder="选择图标" @focus="chooseicons"></el-input>
         </el-form-item>
         <el-form-item label="路径" label-width="80px">
           <el-input v-model="form.path" placeholder></el-input>
+        </el-form-item>
+        <el-form-item label="权重" label-width="80px">
+          <el-input v-model="form.seq" placeholder="权重值大的会排在后面"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -56,18 +83,30 @@
         <el-button v-if="form.id>0" type="primary" @click="save_menudata">保存</el-button>
       </div>
     </el-dialog>
+
+    <icon-choose @choosed_icon="choosed_icons" :show-dialog="iconsshow" ></icon-choose>
   </div>
 </template>
 
 <script>
-import { addmenu, menulist, rootlist,editmenu,upitem } from "@/api/menumgr/index";
+import {
+  addmenu,
+  menulist,
+  rootlist,
+  editmenu
+} from "@/api/menumgr/index";
+import iconslist from "@/components/choose/chooseicons";
+import {menutypes} from '@/api/base/baseinfo';
+let _this = {};
 export default {
   data() {
     return {
-      dialogtitle:'新增菜单',
+      dialogtitle: "新增菜单",
       list: [],
+      menutype_list:[],
       recordcount: 0,
       dialogshow: false,
+      iconsshow: false,
       pid: 0,
       query: {
         pagesize: 50,
@@ -83,15 +122,29 @@ export default {
         pid: 0,
         icon: "",
         path: "",
-        status: 1
+        status: 1,
+        menutype:1,
+        seq:0
       },
-      level:{
-        pid:0
+      options: [{ value: 1, label: "启用" }, { value: 0, label: "禁用" }],
+      level: {
+        pid: 0
       }
     };
   },
+  created () {
+    this.getmenutypes();
+    _this = this;
+  },
   mounted() {
+    if(this.$route.query.pid)
+    {
+      this.level.pid=this.$route.query.pid;
+    }
     this.rootdata();
+  },
+  components: {
+    "icon-choose": iconslist
   },
   methods: {
     getdata() {
@@ -99,6 +152,11 @@ export default {
         this.recordcount = res.recordcount;
         this.list = res.list;
       });
+    },
+    getmenutypes(){
+      menutypes().then(res=>{
+        this.menutype_list = res.list;
+      })
     },
     rootdata() {
       rootlist(this.level.pid).then(res => {
@@ -112,52 +170,75 @@ export default {
         this.rootdata();
       });
     },
-    save_menudata(){
-      editmenu(this.form).then(res=>{
-        this.dialogshow=false;
+    save_menudata() {
+      editmenu(this.form).then(res => {
+        this.dialogshow = false;
         this.rootdata();
-      })
+      });
     },
     pagechange(val) {
       this.query.pageindex = val;
     },
     search() {
-      this.level.pid=0;
+      this.level.pid = 0;
       this.query.pagesize = 1;
       this.rootdata();
     },
     menuadd() {
       this.dialogshow = true;
-      this.form.id=0;
+      this.form.id = 0;
     },
     handleSizeChange(val) {
       this.pagesize = val;
     },
     edit_menu(row) {
-      console.log(row);
-      this.dialogtitle='编辑菜单项';
+      this.dialogtitle = "编辑菜单项";
       this.form.id = row.id;
-      this.form.pid=row.pid;
+      this.form.pid = row.pid;
       this.form.path = row.path;
-      this.form.status=row.status;
-      this.form.icon=row.icon;
-      this.form.title=row.title;
-      this.form.code=row.code;
+      this.form.status = row.status;
+      this.form.icon = row.icon;
+      this.form.title = row.title;
+      this.form.code = row.code;
+      this.form.menutype=row.menutype;
+      this.form.seq = row.seq;
       this.dialogshow = true;
     },
     add_submenu(row) {
+      this.form.id=0;
       this.form.pid = row.id;
+      this.form.path = '';
+      this.form.status = 1;
+      this.form.icon = '';
+      this.form.title = '';
+      this.form.code = row.code+'01';
+      this.form.menutype='';
+      this.form.seq = 10;
       this.dialogshow = true;
     },
-    view_submenu(row){
+    view_submenu(row) {
       this.level.pid = row.id;
       this.rootdata();
     },
-    uplevel(){
-      upitem(this.level.pid).then(res=>{
-        this.level.pid = res.entry.pid;
-        this.rootdata();
-      })
+    uplevel() {
+      this.$router.back();
+    },
+    chooseicons() {
+      this.iconsshow = true;
+    },
+    choosed_icons(val) {
+      this.form.icon = val.icon;
+      this.iconsshow = false;
+    }
+  },
+  filters: {
+    menutypeName: function(val) {
+      const list = _this.menutype_list.filter(item=>{return item.id===val});
+      if(list.length>0)
+      {return list[0].title}
+      else{
+        return val;
+      }
     }
   }
 };

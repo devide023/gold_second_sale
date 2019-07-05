@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { title } from '../settings';
 Vue.use(Router)
 
 /* Layout */
@@ -60,6 +61,24 @@ export const constantRoutes = [{
       meta: {
         title: '用户列表',
         icon: 'chart-scatter-plot'
+      }
+    }]
+  },
+  {
+    path:'/rolemgr',
+    name:'rolemgr',
+    component:Layout,
+    meta:{
+      title:'角色管理',
+      icon:'role'
+    },
+    children:[{
+      path:'index',
+      name:'rolelist',
+      component:()=>import('@/views/rolemgr/index'),
+      meta:{
+        title:'角色列表',
+        icon:'list'
       }
     }]
   },

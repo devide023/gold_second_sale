@@ -42,15 +42,15 @@ const actions = {
       password
     } = userInfo
     return login({
-        username: username.trim(),
-        userpwd: password
-      }).then(response => {
-        commit('SET_TOKEN', response.token)
-        commit('SET_NAME', response.user.username)
-        commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-        setToken(response.token)
-        setUserHead('https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-      })
+      username: username.trim(),
+      userpwd: password
+    }).then(response => {
+      commit('SET_TOKEN', response.token)
+      commit('SET_NAME', response.user.username)
+      commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
+      setToken(response.token)
+      setUserHead('https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
+    })
   },
 
   // get user info
@@ -88,10 +88,10 @@ const actions = {
     state
   }) {
     return logout(state.token).then(() => {
-        commit('SET_TOKEN', '')
-        removeToken()
-        resetRouter()
-      })
+      commit('SET_TOKEN', '')
+      removeToken()
+      resetRouter()
+    })
   },
 
   // remove token

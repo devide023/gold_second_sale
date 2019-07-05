@@ -27,8 +27,8 @@ import {
   mockXHR
 } from '../mock'
 import {
-  formatDate
-} from '@/utils/datetool';
+  parseTime
+} from '@/utils/index';
 import {
   StatusList
 } from '@/utils/status';
@@ -44,7 +44,7 @@ Vue.use(ElementUI, {
 Vue.config.productionTip = false
 Vue.filter('formatedate', function (value) {
   if (String(value) !== "null") {
-    return formatDate(new Date(value), "yyyy-MM-dd");
+    return parseTime(new Date(value), "{y}-{m}-{d}");
   } else {
     return "";
   }

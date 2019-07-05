@@ -40,12 +40,18 @@ export function menulist(query) {
   })
 }
 export function delmenu(ids) {
-  return ({
+  return request({
     url: '/menumgr/del',
     method: 'post',
     headers: {
       'Content-Type': 'application/json'
     },
     data: JSON.stringify(ids)
+  })
+}
+export function menutree(){
+  return request({
+    url:'/menumgr/menutree',
+    method:'get'
   })
 }

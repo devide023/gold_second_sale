@@ -1,15 +1,10 @@
 import request from '@/utils/request'
 import querystring from 'querystring'
-export function userlist(key, code, pageindex, pagesize) {
+export function userlist(data) {
   return request({
     url: '/usermgr/list',
     method: 'post',
-    data: querystring.stringify({
-      user_code: code,
-      key: key,
-      pageindex: pageindex,
-      pagesize: pagesize
-    })
+    data: querystring.stringify(data)
   })
 }
 
@@ -66,5 +61,46 @@ export function logout(token) {
     url: '/usermgr/logout',
     method: 'get',
     params:{token}
+  })
+}
+
+export function modifyuser(data)
+{
+  return request({
+    url:'/usermgr/edit',
+    method:'post',
+    data:querystring.stringify(data)
+  })
+}
+
+export function rolebyuids(data)
+{
+  return request({
+    url:'/usermgr/rolebyuids',
+    method:'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data:JSON.stringify(data)
+  })
+}
+export function saveuserroles(data)
+{
+  return request({
+    url:'/usermgr/saveuserroles',
+    method:'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data:JSON.stringify(data)
+  })
+}
+export function getusermenus(uid){
+  return request({
+    url:'/usermgr/usermenus',
+    method:'get',
+    params:{
+      uid:uid
+    }
   })
 }

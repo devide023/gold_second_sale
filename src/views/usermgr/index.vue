@@ -1,4 +1,5 @@
 import { formatDate } from '../../utils/datetool';
+import factory from 'mockjs';
 <template>
   <div>
     <div class="querybar">
@@ -47,7 +48,7 @@ import { formatDate } from '../../utils/datetool';
       @size-change="handleSizeChange"
       layout="total, sizes, prev, pager, next"
     ></el-pagination>
-    <el-dialog title="新增用户" top="20px" :visible.sync="dialogFormVisible">
+    <el-dialog :title="dialogtitle" top="20px" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="用户代号" label-width="80px">
           <el-input v-model="form.usercode"></el-input>
@@ -62,6 +63,12 @@ import { formatDate } from '../../utils/datetool';
           <el-select v-model="form.sex" placeholder="请选择性别">
             <el-option label="男" value="1"></el-option>
             <el-option label="女" value="0"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态" label-width="80px">
+          <el-select v-model="form.status" placeholder="">
+            <el-option label="启用" value="1"></el-option>
+            <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="联系电话" label-width="80px">
@@ -81,49 +88,94 @@ import { formatDate } from '../../utils/datetool';
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submit_userdata">确定</el-button>
+        <el-button v-if="form.id===0" type="primary" @click="submit_userdata">确定</el-button>
+        <el-button v-if="form.id>0" type="primary" @click="update_userdata">保存</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="用户角色" :visible.sync="dialogshow_role">
+      <el-checkbox-group v-model="formuserrole.roleids">
+        <el-checkbox v-for="item in rolelist" :key="item.id" :label="item.id">{{item.title}}</el-checkbox>
+      </el-checkbox-group>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogshow_role=false">取消</el-button>
+        <el-button type="primary" @click="submit_userrole">提交</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { userlist, adduser, deluser, disabeluser } from "@/api/usermgr/user";
+import { userlist, adduser, deluser, disabeluser,modifyuser,rolebyuids,saveuserroles } from "@/api/usermgr/user";
+import {rolelist} from '@/api/rolemgr/index';
 export default {
   data() {
     return {
       key: "",
       code: "",
       list: [],
+      rolelist:[],
       pageindex: 1,
       pagesize: 50,
       recordcount: 0,
       dialogFormVisible: false,
+      dialogshow_role:false,
       form: {
+        id:0,
         usercode: "",
         username: "",
         userpwd: "",
-        status: 1,
+        status: "1",
         tel: "",
         birthday: "",
         sex: "1",
         address: ""
       },
-      multipleSelection: []
+      dialogtitle:'新增用户',
+      multipleSelection: [],
+      formuserrole:{
+      userid:0,
+      roleids:[]
+      }
     };
   },
   mounted() {
     this.getadata();
+    this.getrolelist();
   },
   methods: {
     getadata() {
-      userlist(this.key, this.code, this.pageindex, this.pagesize).then(res => {
+      userlist({key:this.key, user_code:this.code, pageindex:this.pageindex, pagesize:this.pagesize}).then(res => {
         this.list = res.list;
         this.recordcount = res.recordcount;
       });
     },
+    getrolelist(){
+      const querydata={
+        pageindex:1,
+        pagesize:655350
+      }
+      rolelist(querydata).then(res=>{
+        this.rolelist = res.list;
+      });
+    },
+    getuserrolelist(uids){
+      rolebyuids(uids).then(res=>{
+        this.formuserrole.roleids = res.list.map(item=>{return item.id});
+      })
+    },
     adduser() {
       this.dialogFormVisible = true;
+      this.form.id=0;
+      this.form.usercode='';
+      this.form.username='';
+      this.form.userpwd='';
+      this.form.status='1';
+      this.form.tel='';
+      this.form.birthday='';
+      this.form.sex='1';
+      this.form.address='';
     },
     disdel() {
       if (this.multipleSelection.length > 0) {
@@ -186,6 +238,12 @@ export default {
         this.getadata();
       });
     },
+    update_userdata(){
+      modifyuser(this.form).then(res=>{
+        this.getadata();
+        this.dialogFormVisible=false;
+      });
+    },
     query() {
       this.getadata();
     },
@@ -202,10 +260,30 @@ export default {
       this.show_dropdown_menu = true;
     },
     useredit(row) {
-      console.log(row);
+      this.dialogtitle="编辑用户信息";
+      this.form.id = row.id;
+      this.form.usercode=row.usercode;
+      this.form.username=row.username;
+      this.form.userpwd=row.userpwd;
+      this.form.status=String(row.status);
+      this.form.tel=row.tel;
+      this.form.birthday=row.birthday;
+      this.form.sex=String(row.sex);
+      this.form.address=row.address;
+      this.dialogFormVisible=true;
     },
     userrole(row) {
-      console.log(row);
+      const q=[];
+      q.push(row.id);
+      this.formuserrole.userid = row.id;
+      this.getuserrolelist(q);
+      this.dialogshow_role=true;
+    },
+    submit_userrole()
+    {
+      saveuserroles(this.formuserrole).then(res=>{
+        this.dialogshow_role=false;
+      });
     }
   }
 };
