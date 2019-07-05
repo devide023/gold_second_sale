@@ -38,12 +38,26 @@ export const constantRoutes = [{
   {
     path:'/',
     hidden:true,
-    component:Layout
+    redirect:'/admin/index'
   },
   {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
+  },
+  {
+    path:'/admin',
+    component:Layout,
+    name:'admin',
+    children:[{
+      path:'index',
+      component:()=>import('@/views/admin_index'),
+      name:'admin_index',
+      meta:{
+        title:'管理员首页',
+        icon:'admin'
+      }
+    }]
   },
   {
     path: '/usermgr',

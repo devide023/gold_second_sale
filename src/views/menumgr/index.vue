@@ -19,9 +19,7 @@
         </template>
       </el-table-column>
       <el-table-column label="类型">
-        <template slot-scope="scope">
-          {{scope.row.menutype|menutypeName}}
-        </template>
+        <template slot-scope="scope">{{scope.row.menutype|menutypeName}}</template>
       </el-table-column>
       <el-table-column label="名称" prop="title"></el-table-column>
       <el-table-column label="图标">
@@ -63,15 +61,26 @@
           </el-select>
         </el-form-item>
         <el-form-item label="菜单类型" label-width="80px">
-          <el-select v-model="form.menutype" placeholder="">
-            <el-option v-for="item in menutype_list" :key="item.id" :label="item.title" :value="item.id"></el-option>
+          <el-select v-model="form.menutype" placeholder>
+            <el-option
+              v-for="item in menutype_list"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="图标" label-width="80px">
           <el-input v-model="form.icon" placeholder="选择图标" @focus="chooseicons"></el-input>
         </el-form-item>
         <el-form-item label="路径" label-width="80px">
-          <el-input v-model="form.path" placeholder></el-input>
+          <el-select v-model="form.path" placeholder="请选择路由" style="width:100%;">
+            <el-option
+              v-for="(item,index) in route_list"
+              :key="index"
+              :value="item.path"
+            >{{item.path}}</el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="权重" label-width="80px">
           <el-input v-model="form.seq" placeholder="权重值大的会排在后面"></el-input>
@@ -84,26 +93,24 @@
       </div>
     </el-dialog>
 
-    <icon-choose @choosed_icon="choosed_icons" :show-dialog="iconsshow" ></icon-choose>
+    <icon-choose @choosed_icon="choosed_icons" :show-dialog="iconsshow"></icon-choose>
   </div>
 </template>
 
 <script>
-import {
-  addmenu,
-  menulist,
-  rootlist,
-  editmenu
-} from "@/api/menumgr/index";
+import { addmenu, menulist, rootlist, editmenu } from "@/api/menumgr/index";
 import iconslist from "@/components/choose/chooseicons";
-import {menutypes} from '@/api/base/baseinfo';
+import { menutypes } from "@/api/base/baseinfo";
 let _this = {};
+let temppath = "";
+let parentpath='';
 export default {
   data() {
     return {
       dialogtitle: "新增菜单",
       list: [],
-      menutype_list:[],
+      menutype_list: [],
+      route_list: [],
       recordcount: 0,
       dialogshow: false,
       iconsshow: false,
@@ -123,8 +130,8 @@ export default {
         icon: "",
         path: "",
         status: 1,
-        menutype:1,
-        seq:0
+        menutype: 1,
+        seq: 0
       },
       options: [{ value: 1, label: "启用" }, { value: 0, label: "禁用" }],
       level: {
@@ -132,16 +139,16 @@ export default {
       }
     };
   },
-  created () {
+  created() {
     this.getmenutypes();
     _this = this;
   },
   mounted() {
-    if(this.$route.query.pid)
-    {
-      this.level.pid=this.$route.query.pid;
+    if (this.$route.query.pid) {
+      this.level.pid = this.$route.query.pid;
     }
     this.rootdata();
+    this.get_routelist(this.$router.options.routes);
   },
   components: {
     "icon-choose": iconslist
@@ -153,10 +160,30 @@ export default {
         this.list = res.list;
       });
     },
-    getmenutypes(){
-      menutypes().then(res=>{
-        this.menutype_list = res.list;
+    get_routelist(list) {
+      list.forEach(element => {
+        this.route_list.push({ path: element.path });
+        temppath = element.path;
+        if (element.children) {
+          parentpath = element.path;
+          this.get_subroutelist(element.children);
+        }        
+      });
+    },
+    get_subroutelist(list){
+      list.forEach(item=>{
+        temppath = parentpath + "/" + item.path;
+        this.route_list.push({path:temppath});
+        if(item.children){
+          parentpath = temppath;
+          this.get_subroutelist(item.children);
+        }
       })
+    },
+    getmenutypes() {
+      menutypes().then(res => {
+        this.menutype_list = res.list;
+      });
     },
     rootdata() {
       rootlist(this.level.pid).then(res => {
@@ -200,19 +227,19 @@ export default {
       this.form.icon = row.icon;
       this.form.title = row.title;
       this.form.code = row.code;
-      this.form.menutype=row.menutype;
+      this.form.menutype = row.menutype;
       this.form.seq = row.seq;
       this.dialogshow = true;
     },
     add_submenu(row) {
-      this.form.id=0;
+      this.form.id = 0;
       this.form.pid = row.id;
-      this.form.path = '';
+      this.form.path = "";
       this.form.status = 1;
-      this.form.icon = '';
-      this.form.title = '';
-      this.form.code = row.code+'01';
-      this.form.menutype='';
+      this.form.icon = "";
+      this.form.title = "";
+      this.form.code = row.code + "01";
+      this.form.menutype = "";
       this.form.seq = 10;
       this.dialogshow = true;
     },
@@ -233,10 +260,12 @@ export default {
   },
   filters: {
     menutypeName: function(val) {
-      const list = _this.menutype_list.filter(item=>{return item.id===val});
-      if(list.length>0)
-      {return list[0].title}
-      else{
+      const list = _this.menutype_list.filter(item => {
+        return item.id === val;
+      });
+      if (list.length > 0) {
+        return list[0].title;
+      } else {
         return val;
       }
     }
