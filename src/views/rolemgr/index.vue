@@ -247,6 +247,7 @@ export default {
     dialog_user_open() {
       const querydata = [];
       querydata.push(this.userform.roleid);
+      this.$refs.roleuser.clearSelection();
       getuserbyroleids(querydata).then(res => {
         if (res.list.length > 0) {
           const uids = res.list.map(item => {
