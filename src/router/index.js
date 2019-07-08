@@ -36,9 +36,9 @@ export const constantRoutes = [{
     hidden: true
   },
   {
-    path:'/',
-    hidden:true,
-    redirect:'/admin/index'
+    path: '/',
+    hidden: true,
+    redirect: '/admin/index'
   },
   {
     path: '/404',
@@ -46,16 +46,16 @@ export const constantRoutes = [{
     hidden: true
   },
   {
-    path:'/admin',
-    component:Layout,
-    name:'admin',
-    children:[{
-      path:'index',
-      component:()=>import('@/views/admin_index'),
-      name:'admin_index',
-      meta:{
-        title:'管理员首页',
-        icon:'admin'
+    path: '/admin',
+    component: Layout,
+    name: 'admin',
+    children: [{
+      path: 'index',
+      component: () => import('@/views/admin_index'),
+      name: 'admin_index',
+      meta: {
+        title: '管理员首页',
+        icon: 'admin'
       }
     }]
   },
@@ -78,20 +78,20 @@ export const constantRoutes = [{
     }]
   },
   {
-    path:'/rolemgr',
-    name:'rolemgr',
-    component:Layout,
-    meta:{
-      title:'角色管理',
-      icon:'role'
+    path: '/rolemgr',
+    name: 'rolemgr',
+    component: Layout,
+    meta: {
+      title: '角色管理',
+      icon: 'role'
     },
-    children:[{
-      path:'index',
-      name:'rolelist',
-      component:()=>import('@/views/rolemgr/index'),
-      meta:{
-        title:'角色列表',
-        icon:'list'
+    children: [{
+      path: 'index',
+      name: 'rolelist',
+      component: () => import('@/views/rolemgr/index'),
+      meta: {
+        title: '角色列表',
+        icon: 'list'
       }
     }]
   },

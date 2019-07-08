@@ -1,15 +1,14 @@
 <template>
   <div>
-    <el-dialog title="图标选择" top="20px" :visible.sync="showDialog">
-      <ul class="icon_contain">
-        <li v-for="(item,index) in list" :key="index" @click="icon_choosed(item)">
-          <i :class="item"></i>
-        </li>
-      </ul>
-      <div slot="footer" class="dialog-footer">
-        <el-button>取消</el-button>
-      </div>
-    </el-dialog>
+    <el-row>
+      <el-col :span="24">
+        <ul class="icon_contain">
+          <li v-for="(item,index) in list" :key="index" @click="icon_choosed(item)">
+            <i :class="item"></i>
+          </li>
+        </ul>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -21,12 +20,6 @@ export default {
       list: [],
       iconname: ""
     };
-  },
-  props: {
-    showDialog: {
-      type: Boolean,
-      default: false
-    }
   },
   mounted() {
     this.get_data();
@@ -50,6 +43,9 @@ export default {
   list-style: none;
   padding: 0px;
   margin: 0px;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 .icon_contain li {
   margin: 5px;

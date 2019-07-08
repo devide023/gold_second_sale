@@ -79,7 +79,7 @@
               v-for="(item,index) in route_list"
               :key="index"
               :value="item.path"
-            >{{item.path}}</el-option>
+            >{{item.path+'\t'+item.name}}</el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="权重" label-width="80px">
@@ -92,8 +92,12 @@
         <el-button v-if="form.id>0" type="primary" @click="save_menudata">保存</el-button>
       </div>
     </el-dialog>
-
-    <icon-choose @choosed_icon="choosed_icons" :show-dialog="iconsshow"></icon-choose>
+    <el-dialog title="图标选择" top="20px" :visible.sync="iconsshow">
+      <icon-choose @choosed_icon="choosed_icons"></icon-choose>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="iconsshow=false">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -101,9 +105,8 @@
 import { addmenu, menulist, rootlist, editmenu } from "@/api/menumgr/index";
 import iconslist from "@/components/choose/chooseicons";
 import { menutypes } from "@/api/base/baseinfo";
+import {routelist,root_routelist} from '@/utils/tool'
 let _this = {};
-let temppath = "";
-let parentpath = "";
 export default {
   data() {
     return {
@@ -148,7 +151,8 @@ export default {
       this.level.pid = this.$route.query.pid;
     }
     this.rootdata();
-    this.get_routelist(this.$router.options.routes);
+    root_routelist(this.$router.options.routes);
+    this.route_list = routelist;
   },
   components: {
     "icon-choose": iconslist
@@ -158,30 +162,6 @@ export default {
       menulist(this.query).then(res => {
         this.recordcount = res.recordcount;
         this.list = res.list;
-      });
-    },
-    get_routelist(list) {
-      list.forEach(element => {
-        if (!element.hidden) {
-          this.route_list.push({ path: element.path });
-          temppath = element.path;
-          if (element.children) {
-            parentpath = element.path;
-            this.get_subroutelist(element.children);
-          }
-        }
-      });
-    },
-    get_subroutelist(list) {
-      list.forEach(item => {
-        if (!item.hidden) {
-          temppath = parentpath + "/" + item.path;
-          this.route_list.push({ path: temppath });
-          if (item.children) {
-            parentpath = temppath;
-            this.get_subroutelist(item.children);
-          }
-        }
       });
     },
     getmenutypes() {
