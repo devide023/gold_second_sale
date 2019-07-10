@@ -7,6 +7,17 @@ export function addmenu(data) {
     data: Q.stringify(data)
   })
 }
+export function bataddmenu(data)
+{
+  return request({
+    url: '/menumgr/batadd',
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify(data)
+  })
+}
 export function editmenu(data) {
   return request({
     url: '/menumgr/update',

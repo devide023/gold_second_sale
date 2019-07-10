@@ -7,7 +7,6 @@ import {
   getToken,
   setToken,
   removeToken,
-  setUserHead,
   getUserHead
 } from '@/utils/auth'
 import {
@@ -17,7 +16,8 @@ import {
 const state = {
   token: getToken(),
   name: '',
-  avatar: getUserHead()
+  avatar: getUserHead(),
+  usermenulist: []
 }
 
 const mutations = {
@@ -29,6 +29,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_MENU: (state, menus) => {
+    state.usermenulist = menus
   }
 }
 
@@ -46,39 +49,18 @@ const actions = {
       userpwd: password
     }).then(response => {
       commit('SET_TOKEN', response.token)
-      commit('SET_NAME', response.user.username)
-      commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
       setToken(response.token)
-      setUserHead('https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
     })
   },
-
   // get user info
   getInfo({
     commit,
     state
   }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const {
-          data
-        } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
-
-        const {
-          name,
-          avatar
-        } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
+    return getInfo(state.token).then(data => {
+      commit('SET_NAME', data.user.username)
+      commit('SET_AVATAR', data.user.headimg)
+      commit('SET_MENU', data.menulist)
     })
   },
 

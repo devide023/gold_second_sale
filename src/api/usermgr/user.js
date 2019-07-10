@@ -99,12 +99,12 @@ export function saveuserroles(data) {
     data: JSON.stringify(data)
   })
 }
-export function getusermenus(uid) {
+export function getusermenus(token) {
   return request({
     url: '/usermgr/usermenus',
     method: 'get',
     params: {
-      uid: uid
+      token: token
     }
   })
 }

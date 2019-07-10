@@ -1,11 +1,9 @@
-import { formatDate } from '../../utils/datetool';
-import factory from 'mockjs';
 <template>
   <div>
     <div class="querybar">
       <el-input v-model="key" placeholder="请输入姓名" size="small" style="width:150px;"></el-input>
       <el-input v-model="code" placeholder="请输入用户代号" size="small" style="width:150px;"></el-input>
-      <el-button type="primary" icon="el-icon-search" size="small" @click="query">查询</el-button>
+      <el-button type="primary" icon="el-icon-search" size="small" @click="query" v-has="{type:'search'}">查询</el-button>
       <el-button type="primary" icon="el-icon-plus" size="small" @click="adduser">添加用户</el-button>
       <el-button type="warning" icon="el-icon-close" size="small" @click="disdel">禁用</el-button>
       <el-button type="success" icon="el-icon-check" size="small" @click="enabel">启用</el-button>

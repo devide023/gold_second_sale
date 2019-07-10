@@ -30,6 +30,7 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+
 export const constantRoutes = [{
     path: '/login',
     component: () => import('@/views/login/index'),
@@ -49,6 +50,10 @@ export const constantRoutes = [{
     path: '/admin',
     component: Layout,
     name: 'admin',
+    meta:{
+      title:'管理员',
+      icon:'admin'
+    },
     children: [{
       path: 'index',
       component: () => import('@/views/admin_index'),

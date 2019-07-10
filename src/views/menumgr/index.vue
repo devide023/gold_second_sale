@@ -60,6 +60,11 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="父项菜单" label-width="80px">
+          <el-select v-model="form.pid" placeholder="选择父级菜单" style="width:100%">
+            <el-option  v-for="item in all_menus" :key="item.id" :value="item.id">{{item.title}}</el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="菜单类型" label-width="80px">
           <el-select v-model="form.menutype" placeholder>
             <el-option
@@ -117,7 +122,7 @@ export default {
       recordcount: 0,
       dialogshow: false,
       iconsshow: false,
-      pid: 0,
+      all_menus:[],
       query: {
         pagesize: 50,
         pageindex: 1,
@@ -153,6 +158,7 @@ export default {
     this.rootdata();
     root_routelist(this.$router.options.routes);
     this.route_list = routelist;
+    this.get_allmenus();
   },
   components: {
     "icon-choose": iconslist
@@ -163,6 +169,11 @@ export default {
         this.recordcount = res.recordcount;
         this.list = res.list;
       });
+    },
+    get_allmenus(){
+      menulist({pageindex:1,pagesize:655350}).then(res=>{
+        this.all_menus = res.list;
+      })
     },
     getmenutypes() {
       menutypes().then(res => {
@@ -191,9 +202,10 @@ export default {
       this.query.pageindex = val;
     },
     search() {
-      this.level.pid = 0;
-      this.query.pagesize = 1;
-      this.rootdata();
+      menulist(this.query).then(res=>{
+        this.list = res.list;
+        this.query.pageindex = 1;
+      })
     },
     menuadd() {
       this.dialogshow = true;

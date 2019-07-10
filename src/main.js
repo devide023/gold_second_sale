@@ -10,37 +10,19 @@ import '@/styles/index.scss' // global css
 
 import App from './App'
 import store from './store'
-import router from './router'
-
+import router from '@/router/index.js'
 import '@/icons' // icon
 import '@/permission' // permission control
-
-/**
- * If you don't want to use mock-server
- * you want to use MockJs for mock api
- * you can execute: mockXHR()
- *
- * Currently MockJs will be used in the production environment,
- * please remove it before going online! ! !
- */
-import {
-  mockXHR
-} from '../mock'
 import {
   parseTime
 } from '@/utils/index';
 import {
   StatusList
 } from '@/utils/status';
-if (process.env.NODE_ENV === 'production') {
-  mockXHR()
-}
-
 // set ElementUI lang to EN
 Vue.use(ElementUI, {
   locale
 })
-
 Vue.config.productionTip = false
 Vue.filter('formatedate', function (value) {
   if (String(value) !== "null") {
@@ -59,6 +41,14 @@ Vue.filter('statusName', function (value) {
     return value;
   }
 });
+Vue.directive('has',{
+  bind:function(el, binding, vnode){},
+  inserted:function(el,binding,vnode,oldVnode){
+    console.log(vnode.context.$route);
+    console.log(binding.value);
+    el.parentNode.removeChild(el);
+  }
+})
 new Vue({
   el: '#app',
   router,
