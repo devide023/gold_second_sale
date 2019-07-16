@@ -18,6 +18,11 @@
           <router-link :to="{path:'/menumgr/index?pid='+scope.row.id}">{{scope.row.code}}</router-link>
         </template>
       </el-table-column>
+      <el-table-column label="功能简码">
+        <template slot-scope="scope">
+          {{scope.row.menucode}}
+        </template>
+      </el-table-column>
       <el-table-column label="类型">
         <template slot-scope="scope">{{scope.row.menutype|menutypeName}}</template>
       </el-table-column>
@@ -113,7 +118,7 @@
 import { addmenu, menulist, rootlist, editmenu } from "@/api/menumgr/index";
 import iconslist from "@/components/choose/chooseicons";
 import { menutypes } from "@/api/base/baseinfo";
-import {routelist,root_routelist} from '@/utils/tool'
+import {root_routelist} from '@/utils/tool'
 let _this = {};
 export default {
   data() {
@@ -160,8 +165,7 @@ export default {
       this.level.pid = this.$route.query.pid;
     }
     this.rootdata();
-    root_routelist(this.$router.options.routes);
-    this.route_list = routelist;
+    this.route_list = root_routelist(this.$router.options.routes);
     this.get_allmenus();
   },
   components: {
@@ -176,7 +180,9 @@ export default {
     },
     get_allmenus(){
       menulist({pageindex:1,pagesize:655350}).then(res=>{
-        this.all_menus = res.list;
+        this.all_menus = res.list.filter(item=>{
+          return item.menutype!==3;
+        });
       })
     },
     getmenutypes() {

@@ -9,7 +9,8 @@ import {
   getToken,
   setToken,
   removeToken,
-  getUserHead
+  getUserHead,
+  setUserHead
 } from '@/utils/auth'
 import {
   resetRouter,
@@ -63,8 +64,8 @@ const actions = {
       commit('SET_NAME', data.user.username)
       commit('SET_AVATAR', data.user.headimg)
       commit('SET_MENU', data.menulist)
+      setUserHead(data.user.headimg);
       sessionStorage.setItem('menulist', JSON.stringify(data.menulist))
-      console.log(router);
       const routlist = get_userroutes(data.menulist);
       router.addRoutes(constantRoutes.concat(routlist));
       router.options.routes=constantRoutes.concat(routlist);

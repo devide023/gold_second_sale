@@ -3,11 +3,41 @@
     <div class="querybar">
       <el-input v-model="key" placeholder="请输入姓名" size="small" style="width:150px;"></el-input>
       <el-input v-model="code" placeholder="请输入用户代号" size="small" style="width:150px;"></el-input>
-      <el-button type="primary" icon="el-icon-search" size="small" @click="query" v-has="{type:'query'}">查询</el-button>
-      <el-button type="primary" icon="el-icon-plus" size="small" @click="adduser" v-has="{type:'add'}">添加用户</el-button>
-      <el-button type="warning" icon="el-icon-close" size="small" @click="disdel" v-has="{type:'disable'}">禁用</el-button>
-      <el-button type="success" icon="el-icon-check" size="small" @click="enabel" v-has="{type:'enable'}">启用</el-button>
-      <el-button type="danger" icon="el-icon-delete" size="small" @click="remove" v-has="{type:'del'}">删除</el-button>
+      <el-button
+        type="primary"
+        icon="el-icon-search"
+        size="small"
+        @click="query"
+        v-has="{type:'query'}"
+      >查询</el-button>
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        size="small"
+        @click="adduser"
+        v-has="{type:'add'}"
+      >添加用户</el-button>
+      <el-button
+        type="warning"
+        icon="el-icon-close"
+        size="small"
+        @click="disdel"
+        v-has="{type:'disable'}"
+      >禁用</el-button>
+      <el-button
+        type="success"
+        icon="el-icon-check"
+        size="small"
+        @click="enabel"
+        v-has="{type:'enable'}"
+      >启用</el-button>
+      <el-button
+        type="danger"
+        icon="el-icon-delete"
+        size="small"
+        @click="remove"
+        v-has="{type:'del'}"
+      >删除</el-button>
     </div>
     <el-table :data="list" @selection-change="handleSelectionChange">
       >
@@ -16,7 +46,7 @@
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status===1">{{scope.row.status|statusName}}</el-tag>
           <el-tag type="danger" v-if="scope.row.status===0">{{scope.row.status|statusName}}</el-tag>
-          </template>
+        </template>
       </el-table-column>
       <el-table-column label="代号" prop="usercode" width="80"></el-table-column>
       <el-table-column label="姓名" prop="username" width="150"></el-table-column>
@@ -31,8 +61,18 @@
       <el-table-column label="操作" width="100" fixed="right">
         <template slot-scope="scope">
           <div>
-            <el-button type="text" size="small" @click="useredit(scope.row)" v-has="{type:'edit'}">编辑</el-button>
-            <el-button type="text" size="small" @click="userrole(scope.row)" v-has="{type:'userrole'}">角色</el-button>
+            <el-button
+              type="text"
+              size="small"
+              v-has="{type:'edit'}"
+              @click="useredit(scope.row)"
+            >编辑</el-button>
+            <el-button
+              type="text"
+              size="small"
+              v-has="{type:'userrole'}"
+              @click="userrole(scope.row)"
+            >角色</el-button>
           </div>
         </template>
       </el-table-column>
@@ -41,10 +81,10 @@
       :total="recordcount"
       :current-page="pageindex"
       :page-size="pagesize"
-      @current-change="handleCurrentChange"
       :page-sizes="[20, 50, 100, 200]"
-      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
       layout="total, sizes, prev, pager, next"
+      @size-change="handleSizeChange"
     ></el-pagination>
     <el-dialog :title="dialogtitle" top="20px" :visible.sync="dialogFormVisible">
       <el-form :model="form">
@@ -64,7 +104,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
-          <el-select v-model="form.status" placeholder="">
+          <el-select v-model="form.status" placeholder>
             <el-option label="启用" value="1"></el-option>
             <el-option label="禁用" value="0"></el-option>
           </el-select>
@@ -100,27 +140,34 @@
         <el-button type="primary" @click="submit_userrole">提交</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { userlist, adduser, deluser, disabeluser,modifyuser,rolebyuids,saveuserroles } from "@/api/usermgr/user";
-import {rolelist} from '@/api/rolemgr/index';
+import {
+  userlist,
+  adduser,
+  deluser,
+  disabeluser,
+  modifyuser,
+  rolebyuids,
+  saveuserroles
+} from "@/api/usermgr/user";
+import { rolelist } from "@/api/rolemgr/index";
 export default {
   data() {
     return {
       key: "",
       code: "",
       list: [],
-      rolelist:[],
+      rolelist: [],
       pageindex: 1,
       pagesize: 50,
       recordcount: 0,
       dialogFormVisible: false,
-      dialogshow_role:false,
+      dialogshow_role: false,
       form: {
-        id:0,
+        id: 0,
         usercode: "",
         username: "",
         userpwd: "",
@@ -130,11 +177,11 @@ export default {
         sex: "1",
         address: ""
       },
-      dialogtitle:'新增用户',
+      dialogtitle: "新增用户",
       multipleSelection: [],
-      formuserrole:{
-      userid:0,
-      roleids:[]
+      formuserrole: {
+        userid: 0,
+        roleids: []
       }
     };
   },
@@ -144,36 +191,43 @@ export default {
   },
   methods: {
     getadata() {
-      userlist({key:this.key, user_code:this.code, pageindex:this.pageindex, pagesize:this.pagesize}).then(res => {
+      userlist({
+        key: this.key,
+        user_code: this.code,
+        pageindex: this.pageindex,
+        pagesize: this.pagesize
+      }).then(res => {
         this.list = res.list;
         this.recordcount = res.recordcount;
       });
     },
-    getrolelist(){
-      const querydata={
-        pageindex:1,
-        pagesize:655350
-      }
-      rolelist(querydata).then(res=>{
+    getrolelist() {
+      const querydata = {
+        pageindex: 1,
+        pagesize: 655350
+      };
+      rolelist(querydata).then(res => {
         this.rolelist = res.list;
       });
     },
-    getuserrolelist(uids){
-      rolebyuids(uids).then(res=>{
-        this.formuserrole.roleids = res.list.map(item=>{return item.id});
-      })
+    getuserrolelist(uids) {
+      rolebyuids(uids).then(res => {
+        this.formuserrole.roleids = res.list.map(item => {
+          return item.id;
+        });
+      });
     },
     adduser() {
       this.dialogFormVisible = true;
-      this.form.id=0;
-      this.form.usercode='';
-      this.form.username='';
-      this.form.userpwd='';
-      this.form.status='1';
-      this.form.tel='';
-      this.form.birthday='';
-      this.form.sex='1';
-      this.form.address='';
+      this.form.id = 0;
+      this.form.usercode = "";
+      this.form.username = "";
+      this.form.userpwd = "";
+      this.form.status = "1";
+      this.form.tel = "";
+      this.form.birthday = "";
+      this.form.sex = "1";
+      this.form.address = "";
     },
     disdel() {
       if (this.multipleSelection.length > 0) {
@@ -184,16 +238,15 @@ export default {
         disabeluser(ids, 0).then(res => {
           this.getadata();
         });
-      }
-      else{
+      } else {
         this.$notify.info({
-          title: '操作提示',
-          message: '请选择要操作的项！'
+          title: "操作提示",
+          message: "请选择要操作的项！"
         });
       }
     },
-    enabel(){
-      if (this.multipleSelection.length > 0){
+    enabel() {
+      if (this.multipleSelection.length > 0) {
         const ids = [];
         this.multipleSelection.forEach(item => {
           ids.push(item.id);
@@ -201,11 +254,10 @@ export default {
         disabeluser(ids, 1).then(res => {
           this.getadata();
         });
-      }
-      else{
+      } else {
         this.$notify.info({
-          title: '操作提示',
-          message: '请选择要操作的项！'
+          title: "操作提示",
+          message: "请选择要操作的项！"
         });
       }
     },
@@ -219,10 +271,10 @@ export default {
           console.log(res);
           this.getadata();
         });
-      }else{
+      } else {
         this.$notify.info({
-          title: '操作提示',
-          message: '请选择要操作的项！'
+          title: "操作提示",
+          message: "请选择要操作的项！"
         });
       }
     },
@@ -236,10 +288,10 @@ export default {
         this.getadata();
       });
     },
-    update_userdata(){
-      modifyuser(this.form).then(res=>{
+    update_userdata() {
+      modifyuser(this.form).then(res => {
         this.getadata();
-        this.dialogFormVisible=false;
+        this.dialogFormVisible = false;
       });
     },
     query() {
@@ -258,29 +310,28 @@ export default {
       this.show_dropdown_menu = true;
     },
     useredit(row) {
-      this.dialogtitle="编辑用户信息";
+      this.dialogtitle = "编辑用户信息";
       this.form.id = row.id;
-      this.form.usercode=row.usercode;
-      this.form.username=row.username;
-      this.form.userpwd=row.userpwd;
-      this.form.status=String(row.status);
-      this.form.tel=row.tel;
-      this.form.birthday=row.birthday;
-      this.form.sex=String(row.sex);
-      this.form.address=row.address;
-      this.dialogFormVisible=true;
+      this.form.usercode = row.usercode;
+      this.form.username = row.username;
+      this.form.userpwd = row.userpwd;
+      this.form.status = String(row.status);
+      this.form.tel = row.tel;
+      this.form.birthday = row.birthday;
+      this.form.sex = String(row.sex);
+      this.form.address = row.address;
+      this.dialogFormVisible = true;
     },
     userrole(row) {
-      const q=[];
+      const q = [];
       q.push(row.id);
       this.formuserrole.userid = row.id;
       this.getuserrolelist(q);
-      this.dialogshow_role=true;
+      this.dialogshow_role = true;
     },
-    submit_userrole()
-    {
-      saveuserroles(this.formuserrole).then(res=>{
-        this.dialogshow_role=false;
+    submit_userrole() {
+      saveuserroles(this.formuserrole).then(res => {
+        this.dialogshow_role = false;
       });
     }
   }
