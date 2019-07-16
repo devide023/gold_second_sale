@@ -45,10 +45,14 @@ Vue.directive('has', {
   bind: function (el, binding, vnode) {},
   inserted: function (el, binding, vnode, oldVnode) {
     const funs = vnode.context.$route.meta.fun;
-    const hadfun = funs.filter(item => {
-      return item.menucode === binding.value.type
-    })
-    if (hadfun.length === 0) {
+    if(funs){
+      const hadfun = funs.filter(item => {
+        return item.menucode === binding.value.type
+      })
+      if (hadfun.length === 0) {
+        el.parentNode.removeChild(el);
+      }
+    }else{
       el.parentNode.removeChild(el);
     }
   }

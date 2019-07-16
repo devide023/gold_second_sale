@@ -1,5 +1,4 @@
 const routelist=[];
-let route_tempname = '';
 let route_parentname = '';
 export function GetQueryString(name) {
   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

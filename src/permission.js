@@ -12,7 +12,6 @@ import getPageTitle from '@/utils/get-page-title'
 NProgress.configure({
   showSpinner: false
 }) // NProgress Configuration
-//const ml = store.state.user.usermenulist;
 const whiteList = ['/login'] // no redirect whitelist
 router.beforeEach(async (to, from, next) => {
   // start progress bar

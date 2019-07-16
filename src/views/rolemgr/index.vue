@@ -1,5 +1,3 @@
-import factory from 'js-cookie';
-import { FALSE } from 'node-sass';
 <template>
   <div>
     <div class="querybar">
@@ -61,7 +59,7 @@ import { FALSE } from 'node-sass';
     </el-dialog>
 
     <el-dialog title="功能权限" :visible.sync="showdialog_menu" @opened="menudialog_open">
-      <el-tree :data="menulist" :props="props" show-checkbox node-key="id" ref="menutree"></el-tree>
+      <el-tree :data="menulist" :props="props" show-checkbox node-key="id" ref="menutree" check-strictly></el-tree>
       <div slot="footer" class="dialog-footer">
         <el-button @click="showdialog_menu = false">取消</el-button>
         <el-button type="primary" @click="submit_rolemenu">确定</el-button>

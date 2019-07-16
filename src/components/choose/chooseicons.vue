@@ -4,7 +4,7 @@
       <el-col :span="24">
         <ul class="icon_contain">
           <li v-for="(item,index) in list" :key="index" @click="icon_choosed(item)">
-            <i :class="item"></i>
+            <svg-icon :icon-class="item" />
           </li>
         </ul>
       </el-col>

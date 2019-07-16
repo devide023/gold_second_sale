@@ -15,7 +15,7 @@
       </el-table-column>
       <el-table-column label="编码">
         <template slot-scope="scope">
-          <router-link :to="{path:'/menumgr/index?pid='+scope.row.id}">{{scope.row.code}}</router-link>
+          <router-link :to="{path:'/sysmgr/menuindex?pid='+scope.row.id}">{{scope.row.code}}</router-link>
         </template>
       </el-table-column>
       <el-table-column label="功能简码">
@@ -29,7 +29,7 @@
       <el-table-column label="名称" prop="title"></el-table-column>
       <el-table-column label="图标">
         <template slot-scope="scope">
-          <i :class="scope.row.icon" style="font-size:30px;"></i>
+          <svg-icon :icon-class="scope.row.icon" style="font-size:30px;"></svg-icon>
         </template>
       </el-table-column>
       <el-table-column label="权重" prop="seq"></el-table-column>
@@ -233,7 +233,7 @@ export default {
       this.form.icon = row.icon;
       this.form.title = row.title;
       this.form.code = row.code;
-      this.form.code = row.menucode;
+      this.form.menucode = row.menucode;
       this.form.menutype = row.menutype;
       this.form.seq = row.seq;
       this.dialogshow = true;

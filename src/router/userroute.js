@@ -8,7 +8,7 @@ export function get_userroutes(menulist) {
     if (item.path === '/') {
       mitem = {
         path: item.path,
-        redirect: '/admin/index',
+        redirect: '/sysmgr/userindex',
         hidden: true
       }
     } else {
