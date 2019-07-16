@@ -47,6 +47,9 @@
         <el-form-item label="编码" label-width="80px">
           <el-input v-model="form.code" placeholder="菜单编码"></el-input>
         </el-form-item>
+        <el-form-item label="功能简码" label-width="80px">
+          <el-input v-model="form.menucode" placeholder="add,del,query,edit..."></el-input>
+        </el-form-item>
         <el-form-item label="名称" label-width="80px">
           <el-input v-model="form.title" placeholder="菜单名称"></el-input>
         </el-form-item>
@@ -134,6 +137,7 @@ export default {
         id: 0,
         title: "",
         code: "",
+        menucode:'',
         pid: 0,
         icon: "",
         path: "",
@@ -223,6 +227,7 @@ export default {
       this.form.icon = row.icon;
       this.form.title = row.title;
       this.form.code = row.code;
+      this.form.code = row.menucode;
       this.form.menutype = row.menutype;
       this.form.seq = row.seq;
       this.dialogshow = true;
@@ -235,6 +240,7 @@ export default {
       this.form.icon = "";
       this.form.title = "";
       this.form.code = row.code + "01";
+      this.form.menucode='';
       this.form.menutype = "";
       this.form.seq = 10;
       this.dialogshow = true;

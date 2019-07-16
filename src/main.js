@@ -9,8 +9,8 @@ import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
 import '@/styles/index.scss' // global css
 
 import App from './App'
-import store from './store'
 import router from '@/router/index.js'
+import store from './store'
 import '@/icons' // icon
 import '@/permission' // permission control
 import {
@@ -41,12 +41,16 @@ Vue.filter('statusName', function (value) {
     return value;
   }
 });
-Vue.directive('has',{
-  bind:function(el, binding, vnode){},
-  inserted:function(el,binding,vnode,oldVnode){
-    console.log(vnode.context.$route);
-    console.log(binding.value);
-    el.parentNode.removeChild(el);
+Vue.directive('has', {
+  bind: function (el, binding, vnode) {},
+  inserted: function (el, binding, vnode, oldVnode) {
+    const funs = vnode.context.$route.meta.fun;
+    const hadfun = funs.filter(item => {
+      return item.menucode === binding.value.type
+    })
+    if (hadfun.length === 0) {
+      el.parentNode.removeChild(el);
+    }
   }
 })
 new Vue({

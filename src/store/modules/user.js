@@ -1,3 +1,5 @@
+import router from '../../router';
+import {get_userroutes} from '../../router/userroute';
 import {
   login,
   logout,
@@ -10,14 +12,14 @@ import {
   getUserHead
 } from '@/utils/auth'
 import {
-  resetRouter
-} from '@/router'
-
+  resetRouter,
+  constantRoutes
+} from '@/router/index'
 const state = {
   token: getToken(),
   name: '',
   avatar: getUserHead(),
-  usermenulist: []
+  menulist: []
 }
 
 const mutations = {
@@ -31,7 +33,7 @@ const mutations = {
     state.avatar = avatar
   },
   SET_MENU: (state, menus) => {
-    state.usermenulist = menus
+    state.menulist = menus
   }
 }
 
@@ -61,6 +63,11 @@ const actions = {
       commit('SET_NAME', data.user.username)
       commit('SET_AVATAR', data.user.headimg)
       commit('SET_MENU', data.menulist)
+      sessionStorage.setItem('menulist', JSON.stringify(data.menulist))
+      console.log(router);
+      const routlist = get_userroutes(data.menulist);
+      router.addRoutes(constantRoutes.concat(routlist));
+      router.options.routes=constantRoutes.concat(routlist);
     })
   },
 
@@ -73,6 +80,7 @@ const actions = {
       commit('SET_TOKEN', '')
       removeToken()
       resetRouter()
+      sessionStorage.removeItem("menulist")
     })
   },
 
