@@ -70,3 +70,22 @@ export function getuserbyroleids(data) {
     data: JSON.stringify(data)
   })
 }
+export function saveroleapi(formdata){
+  return R({
+    url: '/rolemgr/saveroleapi',
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify(formdata)
+  })
+}
+export function get_roleapi(roleid){
+  return R({
+    url: 'rolemgr/getroleapi',
+    method: 'get',
+    params:{
+      roleid:roleid
+    }
+  })
+}

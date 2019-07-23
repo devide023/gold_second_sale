@@ -19,9 +19,7 @@
         </template>
       </el-table-column>
       <el-table-column label="功能简码">
-        <template slot-scope="scope">
-          {{scope.row.menucode}}
-        </template>
+        <template slot-scope="scope">{{scope.row.menucode}}</template>
       </el-table-column>
       <el-table-column label="类型">
         <template slot-scope="scope">{{scope.row.menutype|menutypeName}}</template>
@@ -70,7 +68,7 @@
         </el-form-item>
         <el-form-item label="父项菜单" label-width="80px">
           <el-select v-model="form.pid" placeholder="选择父级菜单" style="width:100%">
-            <el-option  v-for="item in all_menus" :key="item.id" :value="item.id">{{item.title}}</el-option>
+            <el-option v-for="item in all_menus" :key="item.id" :value="item.id">{{item.title}}</el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="菜单类型" label-width="80px">
@@ -84,7 +82,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="图标" label-width="80px">
-          <el-input v-model="form.icon" placeholder="选择图标" @focus="chooseicons"></el-input>
+          <el-input v-model="form.icon" placeholder="选择图标" @click.native="chooseicons"></el-input>
         </el-form-item>
         <el-form-item label="路径" label-width="80px">
           <el-select v-model="form.path" placeholder="请选择路由" style="width:100%;">
@@ -117,20 +115,21 @@
 <script>
 import { addmenu, menulist, rootlist, editmenu } from "@/api/menumgr/index";
 import iconslist from "@/components/choose/chooseicons";
-import { menutypes } from "@/api/base/baseinfo";
-import {root_routelist} from '@/utils/tool'
+import { menutypes, get_apis } from "@/api/base/baseinfo";
+import { root_routelist } from "@/utils/tool";
 let _this = {};
 export default {
   data() {
     return {
       dialogtitle: "新增菜单",
       list: [],
+      apilist: [],
       menutype_list: [],
       route_list: [],
       recordcount: 0,
       dialogshow: false,
       iconsshow: false,
-      all_menus:[],
+      all_menus: [],
       query: {
         pagesize: 50,
         pageindex: 1,
@@ -142,7 +141,7 @@ export default {
         id: 0,
         title: "",
         code: "",
-        menucode:'',
+        menucode: "",
         pid: 0,
         icon: "",
         path: "",
@@ -167,6 +166,7 @@ export default {
     this.rootdata();
     this.route_list = root_routelist(this.$router.options.routes);
     this.get_allmenus();
+    this.get_apilist();
   },
   components: {
     "icon-choose": iconslist
@@ -178,12 +178,17 @@ export default {
         this.list = res.list;
       });
     },
-    get_allmenus(){
-      menulist({pageindex:1,pagesize:655350}).then(res=>{
-        this.all_menus = res.list.filter(item=>{
-          return item.menutype!==3;
+    get_apilist() {
+      get_apis().then(res => {
+        this.apilist = res.list.map(item=>{return item.url});
+      });
+    },
+    get_allmenus() {
+      menulist({ pageindex: 1, pagesize: 655350 }).then(res => {
+        this.all_menus = res.list.filter(item => {
+          return item.menutype !== 3;
         });
-      })
+      });
     },
     getmenutypes() {
       menutypes().then(res => {
@@ -212,10 +217,10 @@ export default {
       this.query.pageindex = val;
     },
     search() {
-      menulist(this.query).then(res=>{
+      menulist(this.query).then(res => {
         this.list = res.list;
         this.query.pageindex = 1;
-      })
+      });
     },
     menuadd() {
       this.dialogshow = true;
@@ -246,7 +251,7 @@ export default {
       this.form.icon = "";
       this.form.title = "";
       this.form.code = row.code + "01";
-      this.form.menucode='';
+      this.form.menucode = "";
       this.form.menutype = "";
       this.form.seq = 10;
       this.dialogshow = true;
@@ -280,7 +285,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .querybar {
   padding: 5px;

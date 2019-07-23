@@ -59,7 +59,37 @@
     </el-dialog>
 
     <el-dialog title="功能权限" :visible.sync="showdialog_menu" @opened="menudialog_open">
-      <el-tree :data="menulist" :props="props" show-checkbox node-key="id" ref="menutree" check-strictly></el-tree>
+      <el-tabs type="border-card">
+        <el-tab-pane label="功能管理">
+          <el-tree
+            :data="menulist"
+            :props="props"
+            show-checkbox
+            node-key="id"
+            ref="menutree"
+            check-strictly
+          ></el-tree>
+        </el-tab-pane>
+        <el-tab-pane label="Api权限">
+          <el-collapse>
+            <el-collapse-item
+              v-for="(item,index) in apilist"
+              :title="item.baseurl"
+              :key="index"
+              :name="item.baseurl"
+            >
+              <el-checkbox-group v-model="api.apis">
+                <el-checkbox
+                  v-for="(sub,j) in item.funlist"
+                  :key="j"
+                  :label="sub.fullurl"
+                >{{sub.name}}</el-checkbox>
+              </el-checkbox-group>
+            </el-collapse-item>
+          </el-collapse>
+        </el-tab-pane>
+      </el-tabs>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="showdialog_menu = false">取消</el-button>
         <el-button type="primary" @click="submit_rolemenu">确定</el-button>
@@ -97,11 +127,14 @@ import {
   saverolemenus,
   getrolemenu,
   getuserbyroleids,
-  saveroleusers
+  saveroleusers,
+  saveroleapi,
+  get_roleapi
 } from "@/api/rolemgr/index";
 import { StatusList } from "@/utils/status";
 import { menutree } from "@/api/menumgr/index";
 import { userlist } from "@/api/usermgr/user";
+import { get_apis } from "@/api/base/baseinfo";
 export default {
   data() {
     return {
@@ -109,6 +142,7 @@ export default {
       statuslist: [],
       menulist: [],
       userlist: [],
+      apilist: [],
       props: {
         label: "title",
         children: "subitems"
@@ -131,6 +165,10 @@ export default {
         code: "",
         title: ""
       },
+      api: {
+        roleid: 0,
+        apis: []
+      },
       rolemenuform: {
         roleid: 0,
         menuids: []
@@ -146,6 +184,7 @@ export default {
     this.getlist();
     this.getmenulist();
     this.getuserlist();
+    this.get_api_list();
   },
   methods: {
     getlist() {
@@ -167,6 +206,11 @@ export default {
       };
       userlist(q).then(res => {
         this.userlist = res.list;
+      });
+    },
+    get_api_list() {
+      get_apis().then(res => {
+        this.apilist = res.list;
       });
     },
     add_role() {
@@ -199,6 +243,7 @@ export default {
     },
     role_menus(roleid) {
       this.rolemenuform.roleid = roleid;
+      this.api.roleid = roleid;
       this.showdialog_menu = true;
     },
     role_users(roleid) {
@@ -222,13 +267,18 @@ export default {
         });
         this.$refs.menutree.setCheckedKeys(ckkeys);
       });
+      get_roleapi(roleid).then(res=>{
+        this.api.apis = res.list;
+      })
     },
-    submit_rolemenu() {
-      this.rolemenuform.menuids = this.$refs.menutree.getCheckedKeys();
-      saverolemenus(this.rolemenuform).then(res => {
+    async submit_rolemenu() {
+        this.rolemenuform.menuids = this.$refs.menutree.getCheckedKeys();
+        await saverolemenus(this.rolemenuform);
+        await saveroleapi(this.api);
         this.showdialog_menu = false;
         this.rolemenuform = {};
-      });
+        this.api.roleid=0;
+        this.api.apis=[];
     },
     submit_roleuser() {
       saveroleusers(this.userform).then(res => {

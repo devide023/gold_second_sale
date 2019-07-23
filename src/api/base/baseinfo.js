@@ -17,3 +17,9 @@ export function menutypes(){
     method:'get'
   })
 }
+export function get_apis(){
+  return request({
+    url:'/baseinfo/webapis',
+    method:'get'
+  })
+}
