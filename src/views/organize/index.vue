@@ -1,349 +1,209 @@
 <template>
   <div>
-    <div class="exam_structure">
-      <h3 class="title">试卷结构</h3>
-      <span class="tip">（可以点击选中对应题目）</span>
-
-      <el-button type="primary" size="small" class="add_new_question" @click="add_new_question">
-        <i></i>添加新大题
-      </el-button>
+    <div class="operate_bar">
+      <el-input v-model="key" placeholder="输入关键字进行过滤" size="small" style="width:200px;"></el-input>
+      <el-button type="primary" size="small" icon="el-icon-edit" @click="edit_organize_tree">编辑节点树</el-button>
+      <el-button type="success" size="small" icon="el-icon-info" @click="edit_nodeinfo">编辑节点信息</el-button>
     </div>
-
-    <div class="question_info_lists">
-      <el-tree
-        ref="tree"
-        :key="tree_key"
-        :data="treeData"
-        node-key="id"
-        :expand-on-click-node="false"
-        :default-expanded-keys="defaultExpand"
-      >
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span v-if='!data.isEdit'>{{ node.label }}</span>
-        <span v-else><el-input v-model="data.label" placeholder="" @blur="edited(data)"></el-input></span>
-        <span>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => edit(data)">
-            edit
-          </el-button>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => remove(node, data)">
-            Delete
-          </el-button>
-        </span>
-      </span>
-      </el-tree>
-    </div>
+    <el-tree
+      :data="orgtree"
+      node_key="nodeid"
+      default-expand-all
+      :expand-on-click-node="false"
+      :filter-node-method="filterNode"
+      ref="tree"
+      highlight-current
+    ></el-tree>
+    <el-dialog title="组织节点树" :visible.sync="dialogshow" top="10px">
+      <div class="mytree">
+        <el-tree :data="list" node-key="nodeid" default-expand-all :expand-on-click-node="false">
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span v-if="data.isedit">
+              <el-input
+                v-model="node.data.label"
+                size="mini"
+                @blur="overedit(node,data)"
+              >{{ data.label }}</el-input>
+            </span>
+            <span v-else>{{ data.label }}</span>
+            <span>
+              <el-button type="text" size="mini" @click="append(data)">
+                <svg-icon icon-class="plus-circle" style="font-size:15px;color:blue;"></svg-icon>
+              </el-button>
+              <el-button type="text" size="mini" @click="edit(node, data)">
+                <svg-icon icon-class="edit" style="font-size:15px;"></svg-icon>
+              </el-button>
+              <el-button type="text" size="mini" @click="remove(node, data)">
+                <svg-icon icon-class="minus-circle" style="font-size:15px;color:red;"></svg-icon>
+              </el-button>
+            </span>
+          </span>
+        </el-tree>
+      </div>
+      <div slot="footer">
+        <el-button type="success" icon="el-icon-plus" @click="add_rootnode">新增根节点</el-button>
+        <el-button type="primary" icon="el-icon-check" @click="save_organize_tree">确定</el-button>
+        <el-button type="danger" icon="el-icon-close" @click="dialogshow=false">取消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="编辑节点信息" :visible.sync="formdialog" top="10px">
+      <el-form :model="nodeform">
+        <el-form-item label="名称" label-width="80px">
+          <el-input v-model="nodeform.title" placeholder="名称"></el-input>
+        </el-form-item>
+        <el-form-item label="类型" label-width="80px">
+          <el-select v-model="nodeform.orgtype" placeholder="请选择">
+            <el-option
+              v-for="item in orgtype_options"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="编码" label-width="80px">
+          <el-input v-model="nodeform.code" placeholder="编码"></el-input>
+        </el-form-item>
+        <el-form-item label="负责人" label-width="80px">
+          <el-input v-model="nodeform.leader" placeholder="负责人"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" label-width="80px">
+          <el-input v-model="nodeform.tel" placeholder="电话"></el-input>
+        </el-form-item>
+        <el-form-item label="传真" label-width="80px">
+          <el-input v-model="nodeform.fax" placeholder="传真"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" label-width="80px">
+          <el-input v-model="nodeform.email" placeholder="邮箱"></el-input>
+        </el-form-item>
+        <el-form-item label="地址" label-width="80px">
+          <el-input v-model="nodeform.address" placeholder="地址"></el-input>
+        </el-form-item>
+        <el-form-item label="图标" label-width="80px">
+          <el-input v-model="nodeform.logo" placeholder="图标"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button type="primary" @click="update_nodeinfo">确定</el-button>
+        <el-button type="danger" @click="formdialog=false">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import {
+  saveorgtree,
+  getorgtree,
+  getnodeinfo,
+  updatenodeinfo,
+  orgtypelist
+} from "@/api/organize/index";
 export default {
   data() {
     return {
-      treeData: [
-        {
-          id: 1,
-
-          label: "一级 1",
-
-          isEdit: false,
-
-          children: [
-            {
-              id: 4,
-
-              label: "二级 1-1",
-
-              isEdit: false,
-
-              children: [
-                { id: 9, label: "三级 1-1-1", isEdit: false },
-                { id: 10, label: "三级 1-1-2", isEdit: false },
-                { id: 11, label: "三级 1-1-3", isEdit: false }
-              ]
-            },
-
-            {
-              id: 12,
-
-              label: "二级 1-2",
-
-              isEdit: false,
-
-              children: []
-            },
-
-            {
-              id: 13,
-
-              label: "二级 1-3",
-
-              isEdit: false,
-
-              children: []
-            }
-          ]
-        },
-
-        {
-          id: 2,
-
-          label: "一级 2",
-
-          isEdit: false,
-
-          children: [
-            { id: 5, label: "二级 2-1" },
-            { id: 6, label: "二级 2-2", isEdit: false }
-          ]
-        },
-
-        {
-          id: 3,
-
-          label: "一级 3",
-
-          isEdit: false,
-
-          children: [
-            { id: 7, label: "二级 3-1", isEdit: false },
-            { id: 8, label: "二级 3-2", isEdit: false }
-          ]
-        }
-      ],
-
-      add_question_flag: false,
-
-      new_question_name: "",
-
-      tree_key: 0,
-
-      defaultExpand: []
+      key: "",
+      nodeid: 1,
+      list: [],
+      orgtree: [],
+      dialogshow: false,
+      formdialog: false,
+      nodeform: {},
+      orgtype_options: orgtypelist
     };
   },
-
+  watch: {
+    key(val) {
+      this.$refs.tree.filter(val);
+    }
+  },
+  mounted() {
+    this.gettree_data();
+  },
   methods: {
-    // 添加新大题
-    edit(data){
-      data.isEdit=true;
-    },
-    edited(data){
-      data.isEdit=false;
-    },
-    add_new_question() {
-      this.add_question_flag = true;
-    },
-
-    add_question_sure() {
-      const nodeObj = {
-        id: "",
-        label: this.new_question_name,
-        isEdit: false,
-        children: []
-      };
-
-      this.treeData.push(nodeObj);
-
-      this.add_question_flag = false;
-    },
-
-    add_question_cancel() {
-      this.add_question_flag = false;
-
-      this.new_question_name = "";
-    },
-
-    // 试题名称更新
-
-    nodeEdit(ev, store, data) {
-      data.isEdit = true;
-
-      this.$nextTick(() => {
-        const $input =
-          ev.target.parentNode.parentNode.querySelector("input") ||
-          ev.target.parentElement.parentElement.querySelector("input");
-
-        !$input ? "" : $input.focus();
+    gettree_data() {
+      getorgtree().then(res => {
+        const Fn = Function;
+        this.nodeid = res.nodeid;
+        this.list = new Fn("return " + res.data)();
+        this.orgtree = new Fn("return " + res.data)();
       });
     },
-
-    edit_sure(ev, data) {
-      const $input =
-        ev.target.parentNode.parentNode.querySelector("input") ||
-        ev.target.parentElement.parentElement.querySelector("input");
-
-      if (!$input) {
-        return false;
-      } else {
-        data.label = $input.value;
-
-        data.isEdit = false;
+    append(data) {
+      const newChild = {
+        nodeid: this.nodeid++,
+        isedit: false,
+        parentid: data.nodeid,
+        label: "新节点"
+      };
+      if (!data.children) {
+        this.$set(data, "children", []);
       }
+      data.children.push(newChild);
     },
-
-    // 节点删除
-
-    nodeDelete(node, data) {
+    remove(node, data) {
       const parent = node.parent;
-
       const children = parent.data.children || parent.data;
-
-      const index = children.findIndex(d => d.id === data.id);
-
+      const index = children.findIndex(d => d.nodeid === data.nodeid);
       children.splice(index, 1);
     },
-
-    // 节点上移
-
-    nodeUp(node, data) {
-      const parent = node.parent;
-
-      const children = parent.data.children || parent.data;
-
-      const cIndex = children.findIndex(d => d.id === data.id);
-
-      if (parent.level === 0 && cIndex === 0) {
-        return;
-      } else if (parent.level !== 0 && cIndex === 0) {
-        //不同父节点中移动
-
-        const parent2 = parent.parent;
-
-        const children2 = parent2.data.children || parent2.data;
-
-        const pIndex2 =
-          parseInt(children2.findIndex(p => p.id === parent.data.id), 10) - 1;
-
-        if (pIndex2 < 0) return;
-
-        children2[pIndex2].children.push(data);
-
-        children.splice(cIndex, 1);
-
-        this.defaultExpand[0] = children2[pIndex2].id;
-      } else if (
-        (parent.level === 0 && cIndex !== 0) ||
-        (parent.level !== 0 && cIndex !== 0)
-      ) {
-        const tempChildrenNodex1 = children[cIndex - 1];
-
-        const tempChildrenNodex2 = children[cIndex];
-
-        this.$set(children, cIndex - 1, tempChildrenNodex2);
-
-        this.$set(children, cIndex, tempChildrenNodex1);
-
-        this.defaultExpand[0] = data.id;
-      }
-
-      this.tree_key++;
+    add_rootnode() {
+      this.list.push({
+        label: "根节点",
+        nodeid: this.nodeid,
+        parentid: 0,
+        isedit: false
+      });
+      this.nodeid++;
     },
-
-    // 节点下移
-
-    nodeDown(store, node, data) {
-      const parent = node.parent;
-
-      const children = parent.data.children || parent.data;
-
-      const cIndex = children.findIndex(d => d.id === data.id);
-
-      const cLength = children.length - 1; // 最边上的节点
-
-      const allLevel = store.data.length - 1; // 树的深度
-
-      if (parent.level === allLevel && cIndex === cLength) {
-        // 最最末的节点
-
-        return;
-      } else if (parent.level !== allLevel && cIndex === cLength) {
-        //父节点不同
-
-        const parent2 = parent.parent;
-
-        const children2 = parent2.data.children || parent2.data;
-
-        const pIndex2 = parseInt(
-          children2.findIndex(p => p.id === parent.data.id),
-          10
-        );
-
-        if (pIndex2 === allLevel) return;
-
-        children2[pIndex2 + 1].children.push(data);
-
-        children.splice(cIndex, 1);
-
-        this.defaultExpand[0] = children2[pIndex2 + 1].id;
-      } else if (
-        (parent.level === allLevel && cIndex !== cLength) ||
-        (parent.level !== allLevel && cIndex !== cLength)
-      ) {
-        // 父节点相同
-
-        const tempChildrenNodex1 = children[cIndex + 1];
-
-        const tempChildrenNodex2 = children[cIndex];
-
-        this.$set(children, cIndex + 1, tempChildrenNodex2);
-
-        this.$set(children, cIndex, tempChildrenNodex1);
-
-        this.defaultExpand[0] = data.id;
-      }
-
-      this.tree_key++;
+    edit(node, data) {
+      node.data.isedit = true;
+      this.$nextTick(() => {});
     },
-
-    showOrEdit(data) {
-      if (data.isEdit) {
-        return (
-          <input
-            type='text'
-            value={data.label}
-            on-blur={ev => this.edit_sure(ev, data)}
-          />
-        );
-      } else {
-        return <span>{data.label}</span>;
+    overedit(node, data) {
+      node.data.isedit = false;
+    },
+    save_organize_tree() {
+      if (this.list) {
+        saveorgtree(this.list).then(res => {
+          this.gettree_data();
+          this.dialogshow = false;
+        });
       }
     },
-
-    // 试卷结构树操作group node,
-
-    renderContent(h, { node, data, store }) {
-      return (
-        <div>
-          <span>{this.showOrEdit(data)}</span>
-          <span>
-            <i
-              class='el-icon-edit'
-              on-click={ev => this.nodeEdit(ev, store, data)}
-            ></i>
-            <i
-              class='el-icon-minus'
-              on-click={() => this.nodeDelete(node, data)}
-            ></i>
-            <i
-              class='el-icon-arrow-up'
-              on-click={() => this.nodeUp(node, data)}
-            ></i>
-            <i
-              class='el-icon-arrow-down'
-              on-click={() => this.nodeDown(store, node, data)}
-            ></i>
-          </span>
-        </div>
-      );
+    edit_organize_tree() {
+      this.dialogshow = true;
+    },
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+    edit_nodeinfo() {
+      const node = this.$refs.tree.getCurrentNode();
+      if (node) {
+        getnodeinfo(node.nodeid).then(res => {
+          this.nodeform = res.node;
+          this.formdialog = true;
+        });
+      }
+    },
+    update_nodeinfo() {
+      updatenodeinfo(this.nodeform).then(res => {
+        this.gettree_data();
+        this.formdialog = false;
+      });
     }
   }
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.operate_bar {
+  padding: 5px;
+}
+.mytree {
+  .el-tree-node__content {
+    height: 30px;
+  }
+}
 </style>

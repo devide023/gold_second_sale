@@ -8,7 +8,7 @@ export function get_userroutes(menulist) {
     if (item.path === '/') {
       mitem = {
         path: item.path,
-        redirect: '/sysmgr/userindex',
+        component:()=>import('@/layout/index.vue'),
         hidden: true
       }
     } else {
