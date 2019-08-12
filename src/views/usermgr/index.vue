@@ -60,20 +60,15 @@
       <el-table-column label="地址" prop="address"></el-table-column>
       <el-table-column label="操作" width="100" fixed="right">
         <template slot-scope="scope">
-          <div>
-            <el-button
-              type="text"
-              size="small"
-              v-has="{type:'edit'}"
-              @click="useredit(scope.row)"
-            >编辑</el-button>
-            <el-button
-              type="text"
-              size="small"
-              v-has="{type:'userrole'}"
-              @click="userrole(scope.row)"
-            >角色</el-button>
-          </div>
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <i class="el-icon-setting" style="font-size:16px;"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-has="{type:'edit'}" @click.native="useredit(scope.row)">编辑</el-dropdown-item>
+              <el-dropdown-item v-has="{type:'userrole'}" @click.native="userrole(scope.row)">角色</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>

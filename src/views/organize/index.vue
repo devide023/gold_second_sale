@@ -1,9 +1,13 @@
+import { FALSE } from 'node-sass';
 <template>
   <div>
     <div class="operate_bar">
       <el-input v-model="key" placeholder="输入关键字进行过滤" size="small" style="width:200px;"></el-input>
       <el-button type="primary" size="small" icon="el-icon-edit" @click="edit_organize_tree">编辑节点树</el-button>
       <el-button type="success" size="small" icon="el-icon-info" @click="edit_nodeinfo">编辑节点信息</el-button>
+      <el-upload :action="uploadurl" :show-file-list="false" :multiple="false" class="myupload" :on-success="uploadsuccess" :on-error="uploaderror" :before-upload="beforeUpload">
+        <el-button size="small" type="primary">导入文件</el-button>
+      </el-upload>
     </div>
     <el-tree
       :data="orgtree"
@@ -102,6 +106,7 @@ import {
 export default {
   data() {
     return {
+      uploadurl:'http://127.0.0.1:8090/api/baseinfo/uploadfile',
       key: "",
       nodeid: 1,
       list: [],
@@ -192,7 +197,32 @@ export default {
         this.gettree_data();
         this.formdialog = false;
       });
-    }
+    },
+    uploadsuccess(response, file, fileList){
+      console.log(response);
+      console.log(file);
+      console.log(fileList);
+      this.$notify.success({title:file.name,message:response.msg});
+    },
+    uploaderror(err, file, fileList){
+      console.log(err);
+      console.log(file);
+      console.log(fileList);
+      this.$notify.error({title:file.name,message:err.msg});
+    },
+    beforeUpload(file) {
+      console.log(file);
+        const isJPG = file.type === 'application/vnd.ms-excel' || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        const isLt4M = file.size / 1024 / 1024 < 4;
+
+        if (!isJPG) {
+          this.$notify.error({title:file.name,message:'上传文件只能是 xls或xlsx 格式!'});
+        }
+        if (!isLt4M) {
+          this.$notify.error({title:file.name,message:'上传文件大小不能超过 4MB!'});
+        }
+        return isJPG && isLt4M;
+      }
   }
 };
 </script>
@@ -205,5 +235,9 @@ export default {
   .el-tree-node__content {
     height: 30px;
   }
+}
+.myupload{
+  display: inline;
+  margin-left: 10px;
 }
 </style>

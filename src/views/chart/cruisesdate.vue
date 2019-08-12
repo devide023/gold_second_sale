@@ -19,7 +19,7 @@
     </div>
     <div id="gold_date" style="width:100%;height:600px"></div>
 
-    <el-dialog :title="dialogtitle" :visible.sync="dialogVisible">
+    <el-dialog :title="dialogtitle" :visible.sync="dialogVisible" top="20">
       <el-table
         :data="dialogdetail"
         :border="true"
@@ -30,11 +30,7 @@
       >
         <el-table-column label="航次编号" width="150">
           <template slot-scope="scope">
-            <a
-              :href="'/cruisesmgr/rcdetail?rcno='+scope.row.rcno"
-              style="color:#409EFF;"
-              target="_self"
-            >{{scope.row.rcno}}</a>
+            <router-link :to="'/cruisesmgr/rcdetail?rcno='+scope.row.rcno" style="color:#409EFF;">{{scope.row.rcno}}</router-link>
           </template>
         </el-table-column>
         <el-table-column property="curr" label="销售额" sortable width="200"></el-table-column>

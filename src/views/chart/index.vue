@@ -355,7 +355,7 @@ export default {
     },
     gold1click(param){
       const rcno = param.name;
-      window.location.href='/cruisesmgr/rcdetail?rcno='+rcno;
+      this.$router.push({path:`/cruisesmgr/rcdetail?rcno=${rcno}`});
     }
   }
 };

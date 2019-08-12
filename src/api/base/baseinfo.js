@@ -23,3 +23,13 @@ export function get_apis(){
     method:'get'
   })
 }
+export function uploadfile(data){
+  return request({
+    url:'/baseinfo/uploadfile',
+    method:'post',
+    headers: {
+      'Content-Type': 'multipart/form-data;boundary = ' + new Date().getTime()
+    },
+    data:data
+  })
+}
