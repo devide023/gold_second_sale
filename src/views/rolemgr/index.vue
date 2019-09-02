@@ -26,10 +26,18 @@
         <template slot-scope="scope">{{scope.row.add_time|formatedate}}</template>
       </el-table-column>
       <el-table-column label="操作" width="150px">
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit_role(scope.row)">编辑</el-button>
-          <el-button type="text" size="small" @click="role_menus(scope.row.id)">功能</el-button>
-          <el-button type="text" size="small" @click="role_users(scope.row.id)">用户</el-button>
+         <template slot-scope="scope">
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <i class="el-icon-setting" style="font-size:16px;"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="edit_role(scope.row)">编辑</el-dropdown-item>
+              <el-dropdown-item @click.native="role_menus(scope.row.id)">功能</el-dropdown-item>
+              <el-dropdown-item @click.native="role_users(scope.row.id)">用户</el-dropdown-item>
+              <el-dropdown-item @click.native="remove_role(scope.row.id)">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -223,10 +231,16 @@ export default {
         this.showdialog = false;
       });
     },
-    remove_role() {
-      delrole().then(res => {
-        this.getlist();
-      });
+    remove_role(id) {
+      this.$confirm("你确定要删除该角色?","提示",{
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(()=>{
+          delrole(id).then(res => {
+            this.getlist();
+          });
+        });
     },
     edit_role(row) {
       this.dialogtitle = "编辑角色";

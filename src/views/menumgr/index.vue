@@ -35,11 +35,12 @@
       <el-table-column label="录入日期">
         <template slot-scope="scope">{{scope.row.add_time|formatedate}}</template>
       </el-table-column>
-      <el-table-column label="操作" width="100">
+      <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <div>
             <el-button type="text" size="small" @click="add_submenu(scope.row)">添加</el-button>
             <el-button type="text" size="small" @click="edit_menu(scope.row)">编辑</el-button>
+            <el-button type="text" size="small" @click="remove_menu(scope.row.id)">删除</el-button>
           </div>
         </template>
       </el-table-column>
@@ -113,7 +114,13 @@
 </template>
 
 <script>
-import { addmenu, menulist, rootlist, editmenu } from "@/api/menumgr/index";
+import {
+  addmenu,
+  menulist,
+  rootlist,
+  editmenu,
+  delmenu
+} from "@/api/menumgr/index";
 import iconslist from "@/components/choose/chooseicons";
 import { menutypes, get_apis } from "@/api/base/baseinfo";
 import { root_routelist } from "@/utils/tool";
@@ -180,7 +187,9 @@ export default {
     },
     get_apilist() {
       get_apis().then(res => {
-        this.apilist = res.list.map(item=>{return item.url});
+        this.apilist = res.list.map(item => {
+          return item.url;
+        });
       });
     },
     get_allmenus() {
@@ -269,6 +278,17 @@ export default {
     choosed_icons(val) {
       this.form.icon = val.icon;
       this.iconsshow = false;
+    },
+    remove_menu(id) {
+      this.$confirm("你确定要删除该菜单及下属子菜单?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        delmenu(id).then(res => {
+          this.rootdata();
+        });
+      });
     }
   },
   filters: {

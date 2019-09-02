@@ -50,14 +50,13 @@ export function menulist(query) {
     data: Q.stringify(query)
   })
 }
-export function delmenu(ids) {
+export function delmenu(id) {
   return request({
     url: '/menumgr/del',
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    data: JSON.stringify(ids)
+    method: 'get',
+    params: {
+      id: id
+    }
   })
 }
 export function menutree(){
