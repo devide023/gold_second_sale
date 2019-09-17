@@ -1,4 +1,5 @@
-const routelist=[];
+import request from '@/utils/request';
+const routelist = [];
 let route_parentname = '';
 export function GetQueryString(name) {
   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -11,7 +12,10 @@ export function root_routelist(list) {
   list.forEach(element => {
     if (!element.hidden) {
       const _title = element.meta ? element.meta.title : "";
-      routelist.push({ path: element.path, name: _title });
+      routelist.push({
+        path: element.path,
+        name: _title
+      });
       if (element.children) {
         route_parentname = _title;
         subroutelist(element.children);
@@ -21,15 +25,25 @@ export function root_routelist(list) {
   return routelist;
 }
 
-function subroutelist(list){
+function subroutelist(list) {
   list.forEach(item => {
     if (!item.hidden) {
       const _title = item.meta ? item.meta.title : "";
-      routelist.push({ path: item.path, name: route_parentname+'->'+_title });
+      routelist.push({
+        path: item.path,
+        name: route_parentname + '->' + _title
+      });
       if (item.children) {
         route_parentname = _title;
         subroutelist(item.children);
       }
     }
   });
+}
+
+export function vuecomponents(){
+  return request({
+    url:'/menumgr/vuecom',
+    method:'get'
+  })
 }

@@ -49,7 +49,7 @@ function submenu(list, item) {
       mitem = {
         path: i.path,
         name: i.code,
-        component: (resolve) => require(['@/views/' + i.viewpath + '.vue'], resolve),
+        component: (resolve) => require(['@/' + i.viewpath + '.vue'], resolve),
         meta: {
           title: i.title,
           icon: i.icon

@@ -23,6 +23,12 @@ export function get_apis(){
     method:'get'
   })
 }
+export function get_authoritycodes(){
+  return request({
+    url:'/baseinfo/authoritycodes',
+    method:'get'
+  })
+}
 export function uploadfile(data){
   return request({
     url:'/baseinfo/uploadfile',

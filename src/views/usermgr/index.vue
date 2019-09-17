@@ -146,7 +146,8 @@ import {
   disabeluser,
   modifyuser,
   rolebyuids,
-  saveuserroles
+  saveuserroles,
+  getusercode
 } from "@/api/usermgr/user";
 import { rolelist } from "@/api/rolemgr/index";
 export default {
@@ -215,7 +216,9 @@ export default {
     adduser() {
       this.dialogFormVisible = true;
       this.form.id = 0;
-      this.form.usercode = "";
+      getusercode().then(res=>{
+        this.form.usercode=res.usercode;
+      });
       this.form.username = "";
       this.form.userpwd = "";
       this.form.status = "1";

@@ -1,3 +1,4 @@
+import { NULL } from 'node-sass';
 <template>
   <div>
     <div class="querybar">
@@ -27,7 +28,7 @@
       <el-table-column label="名称" prop="title"></el-table-column>
       <el-table-column label="图标">
         <template slot-scope="scope">
-          <svg-icon :icon-class="scope.row.icon" style="font-size:30px;"></svg-icon>
+          <svg-icon v-if="scope.row.icon!==null" :icon-class="scope.row.icon" style="font-size:30px;"></svg-icon>
         </template>
       </el-table-column>
       <el-table-column label="权重" prop="seq"></el-table-column>
@@ -51,8 +52,18 @@
         <el-form-item label="编码" label-width="80px">
           <el-input v-model="form.code" placeholder="菜单编码"></el-input>
         </el-form-item>
-        <el-form-item label="功能简码" label-width="80px">
-          <el-input v-model="form.menucode" placeholder="add,del,query,edit..."></el-input>
+        <el-form-item label="菜单类型" label-width="80px">
+          <el-select v-model="form.menutype" placeholder>
+            <el-option
+              v-for="item in menutype_list"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.menutype===3" label="功能简码" label-width="80px">
+          <el-input v-model="form.menucode" placeholder="add,del,query,edit..." @click.native="dialog_authority=true"></el-input>
         </el-form-item>
         <el-form-item label="名称" label-width="80px">
           <el-input v-model="form.title" placeholder="菜单名称"></el-input>
@@ -67,31 +78,31 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="父项菜单" label-width="80px">
+        <el-form-item v-if="form.pid!==0" label="父项菜单" label-width="80px">
           <el-select v-model="form.pid" placeholder="选择父级菜单" style="width:100%">
             <el-option v-for="item in all_menus" :key="item.id" :value="item.id">{{item.title}}</el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="菜单类型" label-width="80px">
-          <el-select v-model="form.menutype" placeholder>
-            <el-option
-              v-for="item in menutype_list"
-              :key="item.id"
-              :label="item.title"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="图标" label-width="80px">
+        <el-form-item v-if="form.menutype!==3" label="图标" label-width="80px">
           <el-input v-model="form.icon" placeholder="选择图标" @click.native="chooseicons"></el-input>
         </el-form-item>
-        <el-form-item label="路径" label-width="80px">
-          <el-select v-model="form.path" placeholder="请选择路由" style="width:100%;">
+        <el-form-item v-if="form.menutype!==3" label="路径" label-width="80px">
+          <el-select v-if="isedit" v-model="form.path" placeholder="请选择路由" style="width:100%;">
             <el-option
               v-for="(item,index) in route_list"
               :key="index"
               :value="item.path"
             >{{item.path+'\t'+item.name}}</el-option>
+          </el-select>
+          <el-input v-else v-model="form.path" placeholder="请输入路径"></el-input>
+        </el-form-item>
+        <el-form-item v-if="form.menutype===2" label="视图" label-width="80px">
+          <el-select v-model="form.viewpath" placeholder="请选视图组件" style="width:100%;">
+            <el-option
+              v-for="(item,index) in vuefiles"
+              :key="index"
+              :value="item"
+            >{{item}}</el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="权重" label-width="80px">
@@ -99,7 +110,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogshow = false">取消</el-button>
+        <el-button type="danger" @click="dialogshow = false">取消</el-button>
         <el-button v-if="form.id===0" type="primary" @click="submit_menudata">确定</el-button>
         <el-button v-if="form.id>0" type="primary" @click="save_menudata">保存</el-button>
       </div>
@@ -108,6 +119,14 @@
       <icon-choose @choosed_icon="choosed_icons"></icon-choose>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="iconsshow=false">取消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="权限选择" top="20px" :visible.sync="dialog_authority">
+      <el-radio-group v-model="form.menucode">
+        <el-radio v-for="(item,index) in authority_cods" :key="index" :label="item.code">{{item.title}}</el-radio>
+      </el-radio-group>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialog_authority=false">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -119,24 +138,29 @@ import {
   menulist,
   rootlist,
   editmenu,
-  delmenu
+  delmenu,
+  menucode
 } from "@/api/menumgr/index";
 import iconslist from "@/components/choose/chooseicons";
-import { menutypes, get_apis } from "@/api/base/baseinfo";
-import { root_routelist } from "@/utils/tool";
+import { menutypes, get_apis,get_authoritycodes } from "@/api/base/baseinfo";
+import { root_routelist,vuecomponents } from "@/utils/tool";
 let _this = {};
 export default {
   data() {
     return {
       dialogtitle: "新增菜单",
       list: [],
+      isedit:false,
       apilist: [],
       menutype_list: [],
       route_list: [],
       recordcount: 0,
       dialogshow: false,
       iconsshow: false,
+      dialog_authority:false,
       all_menus: [],
+      vuefiles:[],
+      authority_cods:[],
       query: {
         pagesize: 50,
         pageindex: 1,
@@ -154,7 +178,8 @@ export default {
         path: "",
         status: 1,
         menutype: 1,
-        seq: 0
+        seq: 0,
+        viewpath:'layout/index'
       },
       options: [{ value: 1, label: "启用" }, { value: 0, label: "禁用" }],
       level: {
@@ -174,6 +199,10 @@ export default {
     this.route_list = root_routelist(this.$router.options.routes);
     this.get_allmenus();
     this.get_apilist();
+    this.get_vuecoms();
+    get_authoritycodes().then(res=>{
+      this.authority_cods = res.list;
+    });
   },
   components: {
     "icon-choose": iconslist
@@ -209,6 +238,12 @@ export default {
         this.list = res.list;
       });
     },
+    get_vuecoms(){
+      vuecomponents().then(res=>{
+        this.vuefiles = res.comlist;
+        this.vuefiles.push("/");
+      });
+    },
     submit_menudata() {
       addmenu(this.form).then(res => {
         this.query.pageindex = 1;
@@ -226,6 +261,7 @@ export default {
       this.query.pageindex = val;
     },
     search() {
+      this.query.pid=this.level.pid;
       menulist(this.query).then(res => {
         this.list = res.list;
         this.query.pageindex = 1;
@@ -233,13 +269,19 @@ export default {
     },
     menuadd() {
       this.dialogshow = true;
+      this.isedit=false;
+      menucode(0).then(res=>{
+        this.form.code=res.menucode;
+      })
       this.form.id = 0;
+      this.form.pid=0;
     },
     handleSizeChange(val) {
       this.pagesize = val;
     },
     edit_menu(row) {
       this.dialogtitle = "编辑菜单项";
+      this.isedit=true;
       this.form.id = row.id;
       this.form.pid = row.pid;
       this.form.path = row.path;
@@ -250,16 +292,20 @@ export default {
       this.form.menucode = row.menucode;
       this.form.menutype = row.menutype;
       this.form.seq = row.seq;
+      this.form.viewpath=row.viewpath;
       this.dialogshow = true;
     },
     add_submenu(row) {
+      this.isedit=false;
+      menucode(row.id).then(res=>{
+        this.form.code=row.code+res.menucode;
+      })
       this.form.id = 0;
       this.form.pid = row.id;
       this.form.path = "";
       this.form.status = 1;
       this.form.icon = "";
       this.form.title = "";
-      this.form.code = row.code + "01";
       this.form.menucode = "";
       this.form.menutype = "";
       this.form.seq = 10;

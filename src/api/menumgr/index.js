@@ -65,3 +65,13 @@ export function menutree(){
     method:'get'
   })
 }
+
+export function menucode(pid){
+  return request({
+    url:'/menumgr/menucode',
+    method:'get',
+    params:{
+      pid:pid
+    }
+  })
+}

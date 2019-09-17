@@ -108,3 +108,9 @@ export function getusermenus(token) {
     }
   })
 }
+export function getusercode(){
+  return request({
+    url: '/usermgr/usercode',
+    method: 'get'
+  })
+}
