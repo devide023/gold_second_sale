@@ -4,11 +4,11 @@
       <el-input v-model="key" placeholder="请输入姓名" size="small" style="width:150px;"></el-input>
       <el-input v-model="code" placeholder="请输入用户代号" size="small" style="width:150px;"></el-input>
       <el-button
+        v-has="{type:'query'}"
         type="primary"
         icon="el-icon-search"
         size="small"
         @click="query"
-        v-has="{type:'query'}"
       >查询</el-button>
       <el-button
         type="primary"
@@ -32,11 +32,11 @@
         v-has="{type:'enable'}"
       >启用</el-button>
       <el-button
+        v-has="{type:'del'}"
         type="danger"
         icon="el-icon-delete"
         size="small"
         @click="remove"
-        v-has="{type:'del'}"
       >删除</el-button>
     </div>
     <el-table :data="list" @selection-change="handleSelectionChange">
@@ -44,14 +44,14 @@
       <el-table-column type="selection" width="55" show-overflow-tooltip></el-table-column>
       <el-table-column label="状态" width="70">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status===1">{{scope.row.status|statusName}}</el-tag>
-          <el-tag type="danger" v-if="scope.row.status===0">{{scope.row.status|statusName}}</el-tag>
+          <el-tag v-if="scope.row.status===1">{{ scope.row.status|statusName }}</el-tag>
+          <el-tag v-if="scope.row.status===0" type="danger">{{ scope.row.status|statusName }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="代号" prop="usercode" width="80"></el-table-column>
       <el-table-column label="姓名" prop="username" width="150"></el-table-column>
       <el-table-column label="性别" width="80">
-        <template slot-scope="scope">{{scope.row.sex===1?"男":"女"}}</template>
+        <template slot-scope="scope">{{ scope.row.sex===1?"男":"女" }}</template>
       </el-table-column>
       <el-table-column label="出生日期" width="150">
         <template slot-scope="scope">{{scope.row.birthday|formatedate}}</template>
@@ -116,7 +116,7 @@
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="通讯地址" label-width="80px">
-          <el-input type="textarea" v-model="form.address"></el-input>
+          <el-input v-model="form.address" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -216,8 +216,8 @@ export default {
     adduser() {
       this.dialogFormVisible = true;
       this.form.id = 0;
-      getusercode().then(res=>{
-        this.form.usercode=res.usercode;
+      getusercode().then(res => {
+        this.form.usercode = res.usercode;
       });
       this.form.username = "";
       this.form.userpwd = "";

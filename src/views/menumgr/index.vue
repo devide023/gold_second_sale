@@ -4,9 +4,9 @@ import { NULL } from 'node-sass';
     <div class="querybar">
       <el-input v-model="query.key" placeholder="关键字" size="small" style="width:150px;"></el-input>
       <el-input v-model="query.title" placeholder="名称" size="small" style="width:150px;"></el-input>
-      <el-button type="primary" icon="el-icon-search" @click="search" size="small">查询</el-button>
-      <el-button type="primary" icon="el-icon-plus" @click="menuadd" size="small">添加</el-button>
-      <el-button type="primary" icon="el-icon-arrow-up" @click="uplevel" size="small">上级</el-button>
+      <el-button type="primary" icon="el-icon-search" size="small" @click="search">查询</el-button>
+      <el-button type="primary" icon="el-icon-plus" size="small" @click="menuadd">添加</el-button>
+      <el-button type="primary" icon="el-icon-arrow-up" size="small" @click="uplevel">上级</el-button>
     </div>
     <el-table :data="list">
       <el-table-column label="状态">
@@ -20,7 +20,7 @@ import { NULL } from 'node-sass';
         </template>
       </el-table-column>
       <el-table-column label="功能简码">
-        <template slot-scope="scope">{{scope.row.menucode}}</template>
+        <template slot-scope="scope">{{ scope.row.menucode }}</template>
       </el-table-column>
       <el-table-column label="类型">
         <template slot-scope="scope">{{scope.row.menutype|menutypeName}}</template>
@@ -28,7 +28,11 @@ import { NULL } from 'node-sass';
       <el-table-column label="名称" prop="title"></el-table-column>
       <el-table-column label="图标">
         <template slot-scope="scope">
-          <svg-icon v-if="scope.row.icon!==null" :icon-class="scope.row.icon" style="font-size:30px;"></svg-icon>
+          <svg-icon
+            v-if="scope.row.icon!==null"
+            :icon-class="scope.row.icon"
+            style="font-size:30px;"
+          ></svg-icon>
         </template>
       </el-table-column>
       <el-table-column label="权重" prop="seq"></el-table-column>
@@ -63,7 +67,12 @@ import { NULL } from 'node-sass';
           </el-select>
         </el-form-item>
         <el-form-item v-if="form.menutype===3" label="功能简码" label-width="80px">
-          <el-input v-model="form.menucode" placeholder="add,del,query,edit..." @click.native="dialog_authority=true"></el-input>
+          <el-input
+            v-model="form.menucode"
+            placeholder="add,del,query,edit..."
+            readonly
+            @click.native="dialog_authority=true"
+          ></el-input>
         </el-form-item>
         <el-form-item label="名称" label-width="80px">
           <el-input v-model="form.title" placeholder="菜单名称"></el-input>
@@ -80,7 +89,7 @@ import { NULL } from 'node-sass';
         </el-form-item>
         <el-form-item v-if="form.pid!==0" label="父项菜单" label-width="80px">
           <el-select v-model="form.pid" placeholder="选择父级菜单" style="width:100%">
-            <el-option v-for="item in all_menus" :key="item.id" :value="item.id">{{item.title}}</el-option>
+            <el-option v-for="item in all_menus" :key="item.id" :value="item.id">{{ item.title }}</el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="form.menutype!==3" label="图标" label-width="80px">
@@ -98,11 +107,7 @@ import { NULL } from 'node-sass';
         </el-form-item>
         <el-form-item v-if="form.menutype===2" label="视图" label-width="80px">
           <el-select v-model="form.viewpath" placeholder="请选视图组件" style="width:100%;">
-            <el-option
-              v-for="(item,index) in vuefiles"
-              :key="index"
-              :value="item"
-            >{{item}}</el-option>
+            <el-option v-for="(item,index) in vuefiles" :key="index" :value="item">{{ item }}</el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="权重" label-width="80px">
@@ -121,12 +126,16 @@ import { NULL } from 'node-sass';
         <el-button type="primary" @click="iconsshow=false">取消</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="权限选择" top="20px" :visible.sync="dialog_authority">
-      <el-radio-group v-model="form.menucode">
-        <el-radio v-for="(item,index) in authority_cods" :key="index" :label="item.code">{{item.title}}</el-radio>
+    <el-dialog title="权限编码选择" top="20px" :visible.sync="dialog_authority">
+      <el-radio-group v-model="authdata.code">
+        <el-radio
+          v-for="(item,index) in authority_cods"
+          :key="index"
+          :label="item.code"
+        >{{item.title}}</el-radio>
       </el-radio-group>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialog_authority=false">确定</el-button>
+        <el-button type="primary" @click="btn_select_authcode">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -142,25 +151,32 @@ import {
   menucode
 } from "@/api/menumgr/index";
 import iconslist from "@/components/choose/chooseicons";
-import { menutypes, get_apis,get_authoritycodes } from "@/api/base/baseinfo";
-import { root_routelist,vuecomponents } from "@/utils/tool";
+import { menutypes, get_apis, get_authoritycodes } from "@/api/base/baseinfo";
+import { root_routelist, vuecomponents } from "@/utils/tool";
 let _this = {};
 export default {
+  components: {
+    "icon-choose": iconslist
+  },
   data() {
     return {
       dialogtitle: "新增菜单",
       list: [],
-      isedit:false,
+      isedit: false,
       apilist: [],
       menutype_list: [],
       route_list: [],
       recordcount: 0,
       dialogshow: false,
       iconsshow: false,
-      dialog_authority:false,
+      dialog_authority: false,
       all_menus: [],
-      vuefiles:[],
-      authority_cods:[],
+      vuefiles: [],
+      authority_cods: [],
+      authdata: {
+        code: "",
+        title: ""
+      },
       query: {
         pagesize: 50,
         pageindex: 1,
@@ -179,7 +195,7 @@ export default {
         status: 1,
         menutype: 1,
         seq: 0,
-        viewpath:'layout/index'
+        viewpath: "layout/index"
       },
       options: [{ value: 1, label: "启用" }, { value: 0, label: "禁用" }],
       level: {
@@ -200,12 +216,9 @@ export default {
     this.get_allmenus();
     this.get_apilist();
     this.get_vuecoms();
-    get_authoritycodes().then(res=>{
+    get_authoritycodes().then(res => {
       this.authority_cods = res.list;
     });
-  },
-  components: {
-    "icon-choose": iconslist
   },
   methods: {
     getdata() {
@@ -238,8 +251,8 @@ export default {
         this.list = res.list;
       });
     },
-    get_vuecoms(){
-      vuecomponents().then(res=>{
+    get_vuecoms() {
+      vuecomponents().then(res => {
         this.vuefiles = res.comlist;
         this.vuefiles.push("/");
       });
@@ -261,7 +274,7 @@ export default {
       this.query.pageindex = val;
     },
     search() {
-      this.query.pid=this.level.pid;
+      this.query.pid = this.level.pid;
       menulist(this.query).then(res => {
         this.list = res.list;
         this.query.pageindex = 1;
@@ -269,19 +282,19 @@ export default {
     },
     menuadd() {
       this.dialogshow = true;
-      this.isedit=false;
-      menucode(0).then(res=>{
-        this.form.code=res.menucode;
-      })
+      this.isedit = false;
+      menucode(0).then(res => {
+        this.form.code = res.menucode;
+      });
       this.form.id = 0;
-      this.form.pid=0;
+      this.form.pid = 0;
     },
     handleSizeChange(val) {
       this.pagesize = val;
     },
     edit_menu(row) {
       this.dialogtitle = "编辑菜单项";
-      this.isedit=true;
+      this.isedit = true;
       this.form.id = row.id;
       this.form.pid = row.pid;
       this.form.path = row.path;
@@ -292,14 +305,16 @@ export default {
       this.form.menucode = row.menucode;
       this.form.menutype = row.menutype;
       this.form.seq = row.seq;
-      this.form.viewpath=row.viewpath;
+      this.form.viewpath = row.viewpath;
+      this.authdata.code = row.menucode;
+      this.authdata.title = row.title;
       this.dialogshow = true;
     },
     add_submenu(row) {
-      this.isedit=false;
-      menucode(row.id).then(res=>{
-        this.form.code=row.code+res.menucode;
-      })
+      this.isedit = false;
+      menucode(row.id).then(res => {
+        this.form.code = row.code + res.menucode;
+      });
       this.form.id = 0;
       this.form.pid = row.id;
       this.form.path = "";
@@ -335,6 +350,14 @@ export default {
           this.rootdata();
         });
       });
+    },
+    btn_select_authcode() {
+      var data = this.authority_cods.filter(i => {
+        return i.code === this.authdata.code;
+      });
+      this.form.menucode = data[0].code;
+      this.form.title = data[0].title;
+      this.dialog_authority = false;
     }
   },
   filters: {

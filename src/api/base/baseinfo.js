@@ -29,6 +29,35 @@ export function get_authoritycodes(){
     method:'get'
   })
 }
+export function addauthcode(data){
+  return request({
+    url:'/baseinfo/addauthcode',
+    method:'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify(data)
+  })
+}
+export function editauthcode(data){
+  return request({
+    url:'/baseinfo/editauthcode',
+    method:'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: JSON.stringify(data)
+  })
+}
+export function delauthcode(id){
+  return request({
+    url:'/baseinfo/delauthcode',
+    method:'get',
+    params: {
+      id: id
+    }
+  })
+}
 export function uploadfile(data){
   return request({
     url:'/baseinfo/uploadfile',
